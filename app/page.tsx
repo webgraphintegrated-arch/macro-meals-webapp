@@ -1,39 +1,50 @@
+import Image from "next/image";
+import Link from "next/link";
+
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white text-[#060d57]">
-      
-      <section className="flex flex-col items-center justify-center px-6 py-16 text-center">
-        
-        <img
+    <main className="min-h-screen bg-[#f3f3f3] flex items-center justify-center px-6">
+      <div className="text-center">
+
+        {/* Logo */}
+        <Image
           src="/logo.png"
           alt="Macro Meals On Wheels"
-          className="w-64 mb-8"
+          width={260}
+          height={260}
+          className="mx-auto mb-6"
         />
 
-        <h1 className="text-5xl md:text-7xl font-black leading-tight">
+        {/* Heading */}
+        <h1 className="text-6xl md:text-8xl font-black text-[#060d57] leading-none">
           FUEL YOUR
           <br />
           BODY
         </h1>
 
-        <p className="mt-6 text-xl text-[#6ea52f] font-semibold">
+        {/* Subheading */}
+        <p className="mt-8 text-2xl font-bold text-[#75a62f]">
           Healthy Meals Made Simple
         </p>
 
-        <div className="mt-10 flex flex-col md:flex-row gap-4">
-          
-          <button className="bg-[#060d57] text-white px-8 py-4 rounded-2xl font-bold text-lg">
-            ORDER NOW
-          </button>
+        {/* Buttons */}
+        <div className="mt-12 flex flex-col sm:flex-row gap-5 justify-center">
 
-          <button className="border-2 border-[#060d57] px-8 py-4 rounded-2xl font-bold text-lg">
-            VIEW MENU
-          </button>
+          <Link href="/menu">
+            <button className="bg-[#060d57] text-white px-10 py-5 rounded-2xl font-bold text-xl hover:scale-105 transition">
+              ORDER NOW
+            </button>
+          </Link>
+
+          <Link href="/menu">
+            <button className="border-2 border-[#060d57] text-[#060d57] px-10 py-5 rounded-2xl font-bold text-xl hover:bg-[#060d57] hover:text-white transition">
+              VIEW MENU
+            </button>
+          </Link>
 
         </div>
 
-      </section>
-
+      </div>
     </main>
   );
 }
