@@ -84,25 +84,36 @@ Notes:
 ${notes || "None"}
 `;
 
-    window.open(
-      `https://wa.me/12687808226?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+    const whatsappURL = `https://wa.me/12687808226?text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.open(whatsappURL, "_blank");
+
+    setTimeout(() => {
+      window.location.href = "/order-success";
+    }, 1000);
   }
 
   return (
     <main className="min-h-screen bg-[#f3f3f3] px-4 py-8">
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
+
+        {/* LEFT SIDE */}
         <section className="rounded-3xl bg-white p-6 shadow-xl">
+
           <h1 className="mb-6 text-3xl font-black text-[#060d57] md:text-4xl">
             Pickup Details
           </h1>
 
           <div className="space-y-5">
+
+            {/* FULL NAME */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 Full Name *
               </label>
+
               <input
                 type="text"
                 placeholder="John Doe"
@@ -112,19 +123,24 @@ ${notes || "None"}
               />
             </div>
 
+            {/* WHATSAPP */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 WhatsApp Number *
               </label>
 
               <div className="grid grid-cols-3 gap-3">
+
                 <select
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value)}
                   className="rounded-2xl border border-gray-300 bg-white px-3 py-4 text-base font-semibold text-[#060d57] outline-none focus:border-[#75a62f]"
                 >
                   {countryCodes.map((country) => (
-                    <option key={`${country.label}-${country.code}`} value={country.code}>
+                    <option
+                      key={`${country.label}-${country.code}`}
+                      value={country.code}
+                    >
                       {country.flag} {country.code}
                     </option>
                   ))}
@@ -137,13 +153,16 @@ ${notes || "None"}
                   onChange={(e) => setWhatsapp(e.target.value)}
                   className="col-span-2 rounded-2xl border border-gray-300 bg-white px-5 py-4 text-base font-semibold text-[#060d57] placeholder:text-gray-500 outline-none focus:border-[#75a62f]"
                 />
+
               </div>
             </div>
 
+            {/* EMAIL */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 Email Address (Optional)
               </label>
+
               <input
                 type="email"
                 placeholder="example@email.com"
@@ -153,10 +172,12 @@ ${notes || "None"}
               />
             </div>
 
+            {/* PICKUP DATE */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 Pickup Date *
               </label>
+
               <input
                 type="date"
                 value={pickupDate}
@@ -165,10 +186,12 @@ ${notes || "None"}
               />
             </div>
 
+            {/* PICKUP TIME */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 Pickup Time *
               </label>
+
               <input
                 type="time"
                 value={pickupTime}
@@ -177,10 +200,12 @@ ${notes || "None"}
               />
             </div>
 
+            {/* NOTES */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 Notes / Allergies / Special Requests
               </label>
+
               <textarea
                 placeholder="No onions, extra sauce, allergy notes, etc."
                 value={notes}
@@ -189,6 +214,7 @@ ${notes || "None"}
               />
             </div>
 
+            {/* SUBSCRIBE */}
             <label className="flex items-start gap-3 rounded-2xl bg-[#f3f3f3] p-4">
               <input
                 type="checkbox"
@@ -196,30 +222,41 @@ ${notes || "None"}
                 onChange={() => setSubscribe(!subscribe)}
                 className="mt-1"
               />
+
               <span className="text-sm font-bold text-[#060d57]">
                 Yes, I’d like to receive discounts, updates and special meal offers.
               </span>
             </label>
 
+            {/* PICKUP LOCATION */}
             <div className="rounded-3xl bg-[#060d57] p-5 text-white">
-              <p className="text-lg font-black">Pickup Location</p>
-              <p className="mt-1 text-base">
+              <p className="text-lg font-black">
+                Pickup Location
+              </p>
+
+              <p className="mt-1 text-base leading-relaxed">
                 National Fitness Centre Campsite
                 <br />
                 (Barrows Gym)
               </p>
             </div>
+
           </div>
         </section>
 
+        {/* RIGHT SIDE */}
         <section className="rounded-3xl bg-white p-6 shadow-xl">
+
           <h2 className="mb-6 text-3xl font-black text-[#060d57] md:text-4xl">
             Order Summary
           </h2>
 
           {cart.length === 0 ? (
             <div className="rounded-2xl bg-[#f3f3f3] p-6 text-center">
-              <p className="font-black text-[#060d57]">Your order is empty.</p>
+              <p className="font-black text-[#060d57]">
+                Your order is empty.
+              </p>
+
               <a
                 href="/menu"
                 className="mt-4 inline-block rounded-2xl bg-[#060d57] px-6 py-3 font-black text-white"
@@ -230,8 +267,13 @@ ${notes || "None"}
           ) : (
             <>
               <div className="space-y-5">
+
                 {cart.map((item) => (
-                  <div key={item.id} className="border-b border-gray-200 pb-4">
+                  <div
+                    key={item.id}
+                    className="border-b border-gray-200 pb-4"
+                  >
+
                     <h3 className="text-lg font-black text-[#060d57]">
                       {item.quantity}x {item.category} - {item.name}
                     </h3>
@@ -243,11 +285,15 @@ ${notes || "None"}
                     <p className="mt-1 text-2xl font-black text-[#75a62f]">
                       ${item.price * item.quantity}
                     </p>
+
                   </div>
                 ))}
+
               </div>
 
+              {/* SUBTOTAL */}
               <div className="mt-8 flex items-center justify-between">
+
                 <h3 className="text-2xl font-black text-[#060d57]">
                   Subtotal
                 </h3>
@@ -255,14 +301,17 @@ ${notes || "None"}
                 <p className="text-3xl font-black text-[#060d57]">
                   ${subtotal}
                 </p>
+
               </div>
 
+              {/* SEND BUTTON */}
               <button
                 onClick={sendWhatsAppOrder}
-                className="mt-8 w-full rounded-2xl bg-[#060d57] py-4 text-base font-black text-white"
+                className="mt-8 w-full rounded-2xl bg-[#060d57] py-4 text-base font-black text-white transition hover:scale-[1.01]"
               >
                 Send Order on WhatsApp
               </button>
+
             </>
           )}
         </section>
