@@ -51,6 +51,10 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
 
+  /* =========================
+     ADMIN CHECK + REALTIME ORDERS
+  ========================= */
+
   useEffect(() => {
     const adminLoggedIn = localStorage.getItem("macroMealsAdmin");
 
@@ -61,7 +65,30 @@ export default function AdminOrdersPage() {
 
     setAuthorized(true);
     fetchOrders();
+
+    const channel = supabase
+      .channel("orders-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "orders",
+        },
+        () => {
+          fetchOrders();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
+
+  /* =========================
+     FETCH ORDERS
+  ========================= */
 
   async function fetchOrders() {
     setLoading(true);
@@ -82,6 +109,10 @@ export default function AdminOrdersPage() {
     setLoading(false);
   }
 
+  /* =========================
+     UPDATE ORDER STATUS
+  ========================= */
+
   async function updateStatus(orderId: string, newStatus: string) {
     const { error } = await supabase
       .from("orders")
@@ -100,6 +131,10 @@ export default function AdminOrdersPage() {
       )
     );
   }
+
+  /* =========================
+     LOGOUT
+  ========================= */
 
   function logout() {
     localStorage.removeItem("macroMealsAdmin");
@@ -125,7 +160,6 @@ export default function AdminOrdersPage() {
   return (
     <main className="min-h-screen bg-[#f3f3f3] px-4 py-8">
       <div className="mx-auto max-w-7xl">
-
         {/* =========================
            HEADER SECTION
         ========================= */}
@@ -137,7 +171,7 @@ export default function AdminOrdersPage() {
             </h1>
 
             <p className="mt-2 font-semibold text-gray-600">
-              View customer orders and update pickup status.
+              Live order dashboard with realtime updates.
             </p>
           </div>
 
@@ -197,7 +231,6 @@ export default function AdminOrdersPage() {
                 className="rounded-3xl bg-white p-6 shadow-xl"
               >
                 <div className="grid gap-6 lg:grid-cols-3">
-
                   {/* CUSTOMER INFO */}
                   <div>
                     <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
