@@ -4,19 +4,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 /* =========================
-   TYPES SECTION
+   TYPES
 ========================= */
 
 type OrderItem = {
-  id?: string;
   category: string;
   name: string;
   price: number;
   quantity: number;
-  cal?: number;
-  pro?: string;
-  carb?: string;
-  fat?: string;
 };
 
 type Order = {
@@ -43,7 +38,7 @@ const statuses = [
 ];
 
 /* =========================
-   ADMIN ORDERS PAGE
+   PAGE
 ========================= */
 
 export default function AdminOrdersPage() {
@@ -52,7 +47,26 @@ export default function AdminOrdersPage() {
   const [authorized, setAuthorized] = useState(false);
 
   /* =========================
-     ADMIN CHECK + REALTIME ORDERS
+     FETCH ORDERS
+  ========================= */
+
+  async function fetchOrders() {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setOrders((data as Order[]) || []);
+    setLoading(false);
+  }
+
+  /* =========================
+     LOAD + REALTIME + AUTO REFRESH
   ========================= */
 
   useEffect(() => {
@@ -64,8 +78,10 @@ export default function AdminOrdersPage() {
     }
 
     setAuthorized(true);
+
     fetchOrders();
 
+    /* REALTIME */
     const channel = supabase
       .channel("orders-realtime")
       .on(
@@ -81,36 +97,19 @@ export default function AdminOrdersPage() {
       )
       .subscribe();
 
+    /* AUTO REFRESH FALLBACK */
+    const autoRefresh = setInterval(() => {
+      fetchOrders();
+    }, 10000);
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(autoRefresh);
     };
   }, []);
 
   /* =========================
-     FETCH ORDERS
-  ========================= */
-
-  async function fetchOrders() {
-    setLoading(true);
-
-    const { data, error } = await supabase
-      .from("orders")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error(error);
-      alert("Failed to load orders.");
-      setLoading(false);
-      return;
-    }
-
-    setOrders((data || []) as Order[]);
-    setLoading(false);
-  }
-
-  /* =========================
-     UPDATE ORDER STATUS
+     UPDATE STATUS
   ========================= */
 
   async function updateStatus(orderId: string, newStatus: string) {
@@ -125,11 +124,7 @@ export default function AdminOrdersPage() {
       return;
     }
 
-    setOrders((currentOrders) =>
-      currentOrders.map((order) =>
-        order.id === orderId ? { ...order, status: newStatus } : order
-      )
-    );
+    fetchOrders();
   }
 
   /* =========================
@@ -141,28 +136,18 @@ export default function AdminOrdersPage() {
     window.location.href = "/admin/login";
   }
 
-  function formatDate(dateString: string) {
-    return new Date(dateString).toLocaleString();
+  if (!authorized) {
+    return null;
   }
 
-  if (!authorized) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f3f3f3] px-4">
-        <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
-          <p className="text-xl font-black text-[#060d57]">
-            Checking admin access...
-          </p>
-        </div>
-      </main>
-    );
-  }
+  /* =========================
+     UI
+  ========================= */
 
   return (
     <main className="min-h-screen bg-[#f3f3f3] px-4 py-8">
       <div className="mx-auto max-w-7xl">
-        {/* =========================
-           HEADER SECTION
-        ========================= */}
+        {/* HEADER */}
 
         <div className="mb-8 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-xl md:flex-row md:items-center md:justify-between">
           <div>
@@ -171,24 +156,17 @@ export default function AdminOrdersPage() {
             </h1>
 
             <p className="mt-2 font-semibold text-gray-600">
-              Live order dashboard with realtime updates.
+              Live customer orders dashboard.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex gap-3">
             <a
               href="/menu"
               className="rounded-2xl border-2 border-[#060d57] px-5 py-3 font-black text-[#060d57]"
             >
               View Menu
             </a>
-
-            <button
-              onClick={fetchOrders}
-              className="rounded-2xl bg-[#060d57] px-5 py-3 font-black text-white"
-            >
-              Refresh
-            </button>
 
             <button
               onClick={logout}
@@ -199,29 +177,27 @@ export default function AdminOrdersPage() {
           </div>
         </div>
 
-        {/* =========================
-           LOADING / EMPTY SECTION
-        ========================= */}
+        {/* LOADING */}
 
         {loading && (
-          <div className="rounded-3xl bg-white p-8 text-center shadow-lg">
+          <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
             <p className="text-xl font-black text-[#060d57]">
               Loading orders...
             </p>
           </div>
         )}
 
+        {/* NO ORDERS */}
+
         {!loading && orders.length === 0 && (
-          <div className="rounded-3xl bg-white p-8 text-center shadow-lg">
+          <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
             <p className="text-xl font-black text-[#060d57]">
               No orders yet.
             </p>
           </div>
         )}
 
-        {/* =========================
-           ORDERS LIST SECTION
-        ========================= */}
+        {/* ORDERS */}
 
         {!loading && orders.length > 0 && (
           <div className="grid gap-6">
@@ -231,7 +207,8 @@ export default function AdminOrdersPage() {
                 className="rounded-3xl bg-white p-6 shadow-xl"
               >
                 <div className="grid gap-6 lg:grid-cols-3">
-                  {/* CUSTOMER INFO */}
+                  {/* CUSTOMER */}
+
                   <div>
                     <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
                       Customer
@@ -249,12 +226,17 @@ export default function AdminOrdersPage() {
                       Email: {order.email || "N/A"}
                     </p>
 
-                    <p className="mt-3 text-sm font-semibold text-gray-700">
-                      Ordered: {formatDate(order.created_at)}
+                    <p className="mt-4 text-sm font-semibold text-gray-700">
+                      Ordered:
+                    </p>
+
+                    <p className="text-sm font-black text-[#060d57]">
+                      {new Date(order.created_at).toLocaleString()}
                     </p>
                   </div>
 
-                  {/* PICKUP INFO */}
+                  {/* PICKUP */}
+
                   <div>
                     <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
                       Pickup
@@ -268,16 +250,25 @@ export default function AdminOrdersPage() {
                       Time: {order.pickup_time}
                     </p>
 
-                    <p className="mt-3 text-sm font-semibold text-gray-700">
-                      Subscribe: {order.subscribe ? "Yes" : "No"}
+                    <p className="mt-4 text-sm font-semibold text-gray-700">
+                      Subscribe:
                     </p>
 
-                    <p className="mt-3 text-sm font-semibold text-gray-700">
-                      Notes: {order.notes || "None"}
+                    <p className="text-sm font-black text-[#060d57]">
+                      {order.subscribe ? "Yes" : "No"}
+                    </p>
+
+                    <p className="mt-4 text-sm font-semibold text-gray-700">
+                      Notes:
+                    </p>
+
+                    <p className="text-sm font-black text-[#060d57]">
+                      {order.notes || "None"}
                     </p>
                   </div>
 
                   {/* STATUS */}
+
                   <div>
                     <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
                       Status
@@ -285,13 +276,13 @@ export default function AdminOrdersPage() {
 
                     <select
                       value={order.status}
-                      onChange={(e) => updateStatus(order.id, e.target.value)}
+                      onChange={(e) =>
+                        updateStatus(order.id, e.target.value)
+                      }
                       className="mt-2 w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 font-black text-[#060d57]"
                     >
                       {statuses.map((status) => (
-                        <option key={status} value={status}>
-                          {status}
-                        </option>
+                        <option key={status}>{status}</option>
                       ))}
                     </select>
 
@@ -308,22 +299,23 @@ export default function AdminOrdersPage() {
                 </div>
 
                 {/* ORDER ITEMS */}
+
                 <div className="mt-6 rounded-2xl bg-[#f3f3f3] p-4">
-                  <p className="mb-3 text-sm font-black uppercase tracking-wide text-[#060d57]">
+                  <p className="mb-4 text-sm font-black uppercase tracking-wide text-[#060d57]">
                     Order Items
                   </p>
 
                   <div className="grid gap-3 md:grid-cols-2">
                     {order.items.map((item, index) => (
                       <div
-                        key={`${item.name}-${index}`}
+                        key={index}
                         className="rounded-2xl bg-white p-4"
                       >
                         <p className="text-sm font-black text-[#75a62f]">
                           {item.category}
                         </p>
 
-                        <p className="text-lg font-black text-[#060d57]">
+                        <p className="text-xl font-black text-[#060d57]">
                           {item.quantity}x {item.name}
                         </p>
 
@@ -331,7 +323,7 @@ export default function AdminOrdersPage() {
                           ${item.price} each
                         </p>
 
-                        <p className="mt-1 text-lg font-black text-[#75a62f]">
+                        <p className="mt-2 text-2xl font-black text-[#75a62f]">
                           ${item.price * item.quantity}
                         </p>
                       </div>
