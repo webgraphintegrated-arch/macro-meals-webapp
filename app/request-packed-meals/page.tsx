@@ -171,6 +171,8 @@ export default function PackedMealRequestPage() {
   const [requestedStartDate, setRequestedStartDate] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [notes, setNotes] = useState("");
+  const [containerOption, setContainerOption] = useState("Need Containers");
+  const [subscribe, setSubscribe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
   const [selectedMeals, setSelectedMeals] = useState<SelectedMeal[]>([]);
@@ -190,7 +192,9 @@ export default function PackedMealRequestPage() {
   const isMemberCode = promoCode.trim().toUpperCase() === "HEALTHADDICT26";
   const discountPercent = totalMeals >= 7 ? (isMemberCode ? 15 : 10) : 0;
   const discountAmount = subtotal * (discountPercent / 100);
-  const estimatedTotal = subtotal - discountAmount;
+  const containerFee =
+    containerOption === "Need Containers" ? totalMeals * 2 : 0;
+  const estimatedTotal = subtotal - discountAmount + containerFee;
 
   function isAtLeastTwoDaysAhead(dateValue: string) {
     const today = new Date();
@@ -212,9 +216,7 @@ export default function PackedMealRequestPage() {
 
       if (existingMeal) {
         return currentMeals.map((meal) =>
-          meal.id === id
-            ? { ...meal, quantity: meal.quantity + 1 }
-            : meal
+          meal.id === id ? { ...meal, quantity: meal.quantity + 1 } : meal
         );
       }
 
@@ -235,9 +237,7 @@ export default function PackedMealRequestPage() {
     setSelectedMeals((currentMeals) =>
       currentMeals
         .map((meal) =>
-          meal.id === id
-            ? { ...meal, quantity: meal.quantity - 1 }
-            : meal
+          meal.id === id ? { ...meal, quantity: meal.quantity - 1 } : meal
         )
         .filter((meal) => meal.quantity > 0)
     );
@@ -246,9 +246,7 @@ export default function PackedMealRequestPage() {
   function increaseMeal(id: string) {
     setSelectedMeals((currentMeals) =>
       currentMeals.map((meal) =>
-        meal.id === id
-          ? { ...meal, quantity: meal.quantity + 1 }
-          : meal
+        meal.id === id ? { ...meal, quantity: meal.quantity + 1 } : meal
       )
     );
   }
@@ -260,8 +258,10 @@ export default function PackedMealRequestPage() {
   }
 
   async function submitRequest() {
-    if (!fullName || !whatsapp || !requestedStartDate) {
-      alert("Please fill in your name, WhatsApp number and requested start date.");
+    if (!fullName || !whatsapp || !email || !requestedStartDate) {
+      alert(
+        "Please fill in your name, WhatsApp number, email address and requested start date."
+      );
       return;
     }
 
@@ -271,7 +271,9 @@ export default function PackedMealRequestPage() {
     }
 
     if (!isAtLeastTwoDaysAhead(requestedStartDate)) {
-      alert("Packed meal requests must be submitted at least 2 days in advance.");
+      alert(
+        "Packed meal requests must be submitted at least 2 days in advance."
+      );
       return;
     }
 
@@ -300,6 +302,9 @@ export default function PackedMealRequestPage() {
         items: requestItems,
         subtotal,
         estimated_total: estimatedTotal,
+        container_option: containerOption,
+        container_fee: containerFee,
+        subscribe,
         status: "New Request",
       },
     ]);
@@ -314,7 +319,9 @@ export default function PackedMealRequestPage() {
     const mealBreakdown = selectedMeals
       .map(
         (meal) =>
-          `${meal.quantity}x ${meal.category} - ${meal.name} - $${meal.price * meal.quantity}`
+          `${meal.quantity}x ${meal.category} - ${meal.name} - $${
+            meal.price * meal.quantity
+          }`
       )
       .join("\n");
 
@@ -323,7 +330,7 @@ New Packed Meal Request
 
 Customer: ${fullName}
 WhatsApp: ${fullWhatsapp}
-Email: ${email || "N/A"}
+Email: ${email}
 
 Requested Start Date: ${requestedStartDate}
 Total Meals: ${totalMeals}
@@ -333,9 +340,15 @@ ${mealBreakdown}
 
 Subtotal: $${subtotal}
 Discount Applied: ${discountPercent}%
+Discount Amount: -$${discountAmount.toFixed(2)}
+
+Container Option: ${containerOption}
+Container Fee: $${containerFee.toFixed(2)}
+
 Estimated Total: $${estimatedTotal.toFixed(2)}
 
 Promo Code: ${promoCode.trim() || "N/A"}
+Subscribed to Updates: ${subscribe ? "Yes" : "No"}
 
 Notes:
 ${notes || "None"}
@@ -372,13 +385,13 @@ Packed meal requests must be submitted at least 2 days in advance.
           </h1>
 
           <p className="mx-auto mt-3 max-w-2xl font-semibold text-gray-600">
-            Select 7 or more meals for the week ahead. Requests must be submitted
-            at least 2 days in advance.
+            Select 7 or more meals for the week ahead. Requests must be
+            submitted at least 2 days in advance.
           </p>
         </div>
 
-        {/* DISCOUNT INFO */}
-        <div className="mb-8 grid gap-4 md:grid-cols-2">
+        {/* INFO */}
+        <div className="mb-8 grid gap-4 md:grid-cols-3">
           <div className="rounded-3xl bg-white p-6 shadow-xl">
             <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
               Packed Meal Discount
@@ -398,12 +411,26 @@ Packed meal requests must be submitted at least 2 days in advance.
               Weekly Requests
             </p>
 
-            <h2 className="mt-2 text-4xl font-black">
-              2 Days Ahead
-            </h2>
+            <h2 className="mt-2 text-4xl font-black">2 Days Ahead</h2>
 
             <p className="mt-2 font-semibold text-white/80">
-              Packed meal requests must be submitted at least 2 days before the requested start date.
+              Requests must be submitted at least 2 days before the requested
+              start date.
+            </p>
+          </div>
+
+          <div className="rounded-3xl bg-white p-6 shadow-xl">
+            <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
+              Containers
+            </p>
+
+            <h2 className="mt-2 text-4xl font-black text-[#060d57]">
+              $2 Each
+            </h2>
+
+            <p className="mt-2 font-semibold text-gray-600">
+              Container fee applies unless you provide your own containers in
+              advance.
             </p>
           </div>
         </div>
@@ -463,7 +490,7 @@ Packed meal requests must be submitted at least 2 days in advance.
 
               <div>
                 <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Email Address (Optional)
+                  Email Address *
                 </label>
 
                 <input
@@ -494,6 +521,40 @@ Packed meal requests must be submitted at least 2 days in advance.
 
               <div>
                 <label className="mb-2 block text-sm font-black text-[#060d57]">
+                  Container Option *
+                </label>
+
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => setContainerOption("Need Containers")}
+                    className={`w-full rounded-2xl border-2 px-5 py-4 text-left font-black ${
+                      containerOption === "Need Containers"
+                        ? "border-[#060d57] bg-[#060d57] text-white"
+                        : "border-gray-300 bg-white text-[#060d57]"
+                    }`}
+                  >
+                    I need containers ($2 per meal)
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setContainerOption("Providing Own Containers")
+                    }
+                    className={`w-full rounded-2xl border-2 px-5 py-4 text-left font-black ${
+                      containerOption === "Providing Own Containers"
+                        ? "border-[#75a62f] bg-[#75a62f] text-white"
+                        : "border-gray-300 bg-white text-[#060d57]"
+                    }`}
+                  >
+                    I will provide my own containers in advance
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-black text-[#060d57]">
                   Promo Code
                 </label>
 
@@ -511,6 +572,20 @@ Packed meal requests must be submitted at least 2 days in advance.
                   </p>
                 )}
               </div>
+
+              <label className="flex items-start gap-3 rounded-2xl bg-[#f3f3f3] p-4">
+                <input
+                  type="checkbox"
+                  checked={subscribe}
+                  onChange={() => setSubscribe(!subscribe)}
+                  className="mt-1"
+                />
+
+                <span className="text-sm font-bold text-[#060d57]">
+                  Yes, I’d like to receive updates, discounts and special meal
+                  offers.
+                </span>
+              </label>
 
               <div>
                 <label className="mb-2 block text-sm font-black text-[#060d57]">
@@ -619,7 +694,8 @@ Packed meal requests must be submitted at least 2 days in advance.
             {totalMeals < 7 && (
               <div className="mb-5 rounded-2xl border-2 border-red-500 bg-red-50 p-4">
                 <p className="font-black text-red-600">
-                  Add {7 - totalMeals} more meal{7 - totalMeals === 1 ? "" : "s"} to qualify.
+                  Add {7 - totalMeals} more meal
+                  {7 - totalMeals === 1 ? "" : "s"} to qualify.
                 </p>
               </div>
             )}
@@ -631,10 +707,7 @@ Packed meal requests must be submitted at least 2 days in advance.
                 </p>
               ) : (
                 selectedMeals.map((meal) => (
-                  <div
-                    key={meal.id}
-                    className="rounded-2xl bg-[#f3f3f3] p-4"
-                  >
+                  <div key={meal.id} className="rounded-2xl bg-[#f3f3f3] p-4">
                     <p className="text-sm font-black text-[#75a62f]">
                       {meal.category}
                     </p>
@@ -691,6 +764,11 @@ Packed meal requests must be submitted at least 2 days in advance.
                 <span>-${discountAmount.toFixed(2)}</span>
               </div>
 
+              <div className="mt-2 flex justify-between font-bold text-white/80">
+                <span>Container Fee</span>
+                <span>${containerFee.toFixed(2)}</span>
+              </div>
+
               <div className="mt-4 flex justify-between border-t border-white/20 pt-4 text-2xl font-black">
                 <span>Estimated Total</span>
                 <span>${estimatedTotal.toFixed(2)}</span>
@@ -702,7 +780,9 @@ Packed meal requests must be submitted at least 2 days in advance.
               disabled={loading}
               className="mt-5 w-full rounded-2xl bg-[#75a62f] py-4 font-black text-white"
             >
-              {loading ? "Submitting Request..." : "Submit Packed Meal Request"}
+              {loading
+                ? "Submitting Request..."
+                : "Submit Packed Meal Request"}
             </button>
 
             <a
