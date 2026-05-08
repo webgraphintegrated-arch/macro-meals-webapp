@@ -1,8 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import { useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+
+/* =========================
+   MENU DATA SECTION
+========================= */
 
 const menuCategories = [
   {
@@ -10,12 +12,12 @@ const menuCategories = [
     description:
       "100% homemade burgers sautéed with onion, mushrooms, lettuce, tomato, ketchup, mustard and mayo. Choice of wheat, white bread or tortilla.",
     items: [
-      { name: "Ground Beef", price: 20 },
-      { name: "Ground Chicken", price: 15 },
-      { name: "Chicken Breast", price: 15 },
-      { name: "Fish", price: 20 },
-      { name: "Shrimp", price: 25 },
-      { name: "Salmon", price: 28 },
+      { name: "Ground Beef", price: 20, cal: 476, pro: "30g", carb: "49g", fat: "29g" },
+      { name: "Ground Chicken", price: 15, cal: 393, pro: "29g", carb: "49g", fat: "13g" },
+      { name: "Chicken Breast", price: 15, cal: 357, pro: "35g", carb: "49g", fat: "5g" },
+      { name: "Fish", price: 20, cal: 341, pro: "32g", carb: "49g", fat: "6g" },
+      { name: "Shrimp", price: 25, cal: 293, pro: "21g", carb: "49g", fat: "1g" },
+      { name: "Salmon", price: 28, cal: 365, pro: "30g", carb: "49g", fat: "9g" },
     ],
   },
   {
@@ -23,702 +25,396 @@ const menuCategories = [
     description:
       "Flour/wheat tortilla filled with protein, salad, mushroom, salsa, cheese and sour cream.",
     items: [
-      { name: "Ground Beef", price: 24 },
-      { name: "Ground Chicken", price: 19 },
-      { name: "Chicken", price: 19 },
-      { name: "Fish", price: 25 },
-      { name: "Shrimp", price: 35 },
-      { name: "Salmon", price: 30 },
-      { name: "Steak", price: 32 },
+      { name: "Ground Beef", price: 24, cal: 708, pro: "38g", carb: "41g", fat: "45g" },
+      { name: "Ground Chicken", price: 19, cal: 625, pro: "37g", carb: "41g", fat: "37g" },
+      { name: "Chicken", price: 19, cal: 589, pro: "43g", carb: "41g", fat: "29g" },
+      { name: "Fish", price: 25, cal: 573, pro: "40g", carb: "41g", fat: "30g" },
+      { name: "Shrimp", price: 35, cal: 585, pro: "41g", carb: "41g", fat: "30g" },
+      { name: "Salmon", price: 30, cal: 597, pro: "38g", carb: "41g", fat: "33g" },
+      { name: "Steak", price: 32, cal: 659, pro: "43g", carb: "41g", fat: "34g" },
     ],
   },
   {
     title: "Veggie Wrap",
     description:
-      "Flour/wheat tortilla filled with fresh vegetables, salad, mushroom, salsa, cheese and sour cream.",
-    items: [{ name: "Veggie", price: 15 }],
+      "Flour/wheat tortilla filled with 4oz sweet or white potatoes sautéed with bell peppers, onions, veggies, mushroom, cheese and sour cream.",
+    items: [
+      { name: "Veggie", price: 15, cal: 618, pro: "19g", carb: "76g", fat: "29g" },
+    ],
   },
   {
     title: "Salads",
     description:
-      "Fresh salad bowl served with your choice of protein and balanced toppings.",
+      "A crisp flour/wheat tortilla bowl filled with lettuce, tomatoes, onions, mushrooms, cucumber, cheese and sour cream. Topped with protein of your choice and salad dressing.",
     items: [
-      { name: "Ground Beef", price: 35 },
-      { name: "Ground Chicken", price: 30 },
-      { name: "Chicken", price: 30 },
-      { name: "Fish", price: 35 },
-      { name: "Shrimp", price: 50 },
-      { name: "Salmon", price: 45 },
-      { name: "Steak", price: 45 },
+      { name: "Ground Beef", price: 35, cal: 604, pro: "39g", carb: "43g", fat: "31g" },
+      { name: "Ground Chicken", price: 30, cal: 521, pro: "38g", carb: "43g", fat: "23g" },
+      { name: "Chicken", price: 30, cal: 485, pro: "44g", carb: "43g", fat: "15g" },
+      { name: "Fish", price: 35, cal: 469, pro: "41g", carb: "43g", fat: "16g" },
+      { name: "Shrimp", price: 50, cal: 481, pro: "42g", carb: "43g", fat: "18g" },
+      { name: "Salmon", price: 45, cal: 493, pro: "44g", carb: "43g", fat: "19g" },
+      { name: "Steak", price: 45, cal: 555, pro: "44g", carb: "43g", fat: "20g" },
     ],
   },
   {
     title: "Bowl",
     description:
-      "Balanced bowl meal served with your choice of protein and meal base.",
+      "Flour/wheat tortilla filled with beans and rice, lettuce, tomatoes, onions, mushrooms, cucumber, cheese and sour cream. Topped with protein of your choice and salad dressing.",
     items: [
-      { name: "Ground Beef", price: 40 },
-      { name: "Ground Chicken", price: 35 },
-      { name: "Chicken", price: 35 },
-      { name: "Fish", price: 40 },
-      { name: "Shrimp", price: 55 },
-      { name: "Salmon", price: 50 },
-      { name: "Steak", price: 50 },
+      { name: "Ground Beef", price: 40, cal: 832, pro: "44g", carb: "77g", fat: "56g" },
+      { name: "Ground Chicken", price: 35, cal: 749, pro: "43g", carb: "77g", fat: "48g" },
+      { name: "Chicken", price: 35, cal: 713, pro: "49g", carb: "77g", fat: "40g" },
+      { name: "Fish", price: 40, cal: 697, pro: "46g", carb: "77g", fat: "41g" },
+      { name: "Shrimp", price: 55, cal: 709, pro: "47g", carb: "77g", fat: "41g" },
+      { name: "Salmon", price: 50, cal: 721, pro: "44g", carb: "77g", fat: "48g" },
+      { name: "Steak", price: 50, cal: 783, pro: "49g", carb: "77g", fat: "45g" },
     ],
   },
   {
     title: "Sweet Potato Meals",
     description:
-      "Sweet potato meal served with your selected protein for a balanced packed meal option.",
+      "Sweet potato sautéed with bell peppers, onions and mushrooms, with side salad, veggies and protein of your choice.",
     items: [
-      { name: "Chicken", price: 32 },
-      { name: "Fish", price: 40 },
-      { name: "Shrimp", price: 45 },
-      { name: "Salmon", price: 50 },
-      { name: "Steak", price: 50 },
+      { name: "Chicken", price: 32, cal: 636, pro: "48g", carb: "76g", fat: "17g" },
+      { name: "Fish", price: 40, cal: 612, pro: "44g", carb: "76g", fat: "18g" },
+      { name: "Shrimp", price: 45, cal: 570, pro: "33g", carb: "76g", fat: "17g" },
+      { name: "Salmon", price: 50, cal: 648, pro: "41g", carb: "76g", fat: "23g" },
+      { name: "Steak", price: 50, cal: 741, pro: "48g", carb: "76g", fat: "24g" },
     ],
   },
   {
     title: "Stuffed Potato Meals",
     description:
-      "Stuffed potato packed with your selected protein or veggie option.",
+      "Stuffed potato with protein of your choice and sautéed bell peppers, onions and mushrooms, salad and veggies on the side.",
     items: [
-      { name: "Veggie", price: 20 },
-      { name: "Chicken", price: 30 },
-      { name: "Fish", price: 35 },
-      { name: "Shrimp", price: 35 },
-      { name: "Salmon", price: 40 },
-      { name: "Steak", price: 40 },
+      { name: "Veggie", price: 20, cal: 718, pro: "25g", carb: "87g", fat: "33g" },
+      { name: "Chicken", price: 30, cal: 792, pro: "49g", carb: "76g", fat: "34g" },
+      { name: "Fish", price: 35, cal: 776, pro: "46g", carb: "76g", fat: "35g" },
+      { name: "Shrimp", price: 35, cal: 728, pro: "35g", carb: "76g", fat: "34g" },
+      { name: "Salmon", price: 40, cal: 800, pro: "44g", carb: "76g", fat: "38g" },
+      { name: "Steak", price: 40, cal: 862, pro: "49g", carb: "76g", fat: "39g" },
     ],
   },
   {
     title: "Veggie Rice Meals",
     description:
-      "Veggie rice meal served with your choice of protein or veggie option.",
+      "Rice sautéed with bell peppers, onions, mushrooms, carrots and broccoli, with side salad and protein of your choice.",
     items: [
-      { name: "Veggie", price: 17 },
-      { name: "Chicken", price: 25 },
-      { name: "Fish", price: 30 },
-      { name: "Shrimp", price: 40 },
-      { name: "Salmon", price: 40 },
-      { name: "Steak", price: 40 },
-      { name: "Ground Beef", price: 30 },
-      { name: "Ground Chicken", price: 25 },
+      { name: "Veggie", price: 17, cal: 468, pro: "11g", carb: "64g", fat: "17g" },
+      { name: "Chicken", price: 25, cal: 604, pro: "48g", carb: "64g", fat: "19g" },
+      { name: "Fish", price: 30, cal: 580, pro: "44g", carb: "64g", fat: "20g" },
+      { name: "Shrimp", price: 40, cal: 538, pro: "33g", carb: "64g", fat: "19g" },
+      { name: "Salmon", price: 40, cal: 616, pro: "41g", carb: "64g", fat: "25g" },
+      { name: "Steak", price: 40, cal: 709, pro: "48g", carb: "64g", fat: "26g" },
+      { name: "Ground Beef", price: 30, cal: 783, pro: "42g", carb: "64g", fat: "43g" },
+      { name: "Ground Chicken", price: 25, cal: 658, pro: "39g", carb: "64g", fat: "29g" },
     ],
   },
   {
     title: "Sweet Potato Fries Meals",
     description:
-      "Sweet potato fries meal served with your selected protein or veggie option.",
+      "Oven baked sweet potato fries with side salad, veggies and protein of your choice.",
     items: [
-      { name: "Veggie", price: 25 },
-      { name: "Chicken", price: 32 },
-      { name: "Fish", price: 40 },
-      { name: "Shrimp", price: 50 },
-      { name: "Salmon", price: 50 },
-      { name: "Steak", price: 50 },
+      { name: "Veggie", price: 25, cal: 500, pro: "11g", carb: "76g", fat: "17g" },
+      { name: "Chicken", price: 32, cal: 636, pro: "48g", carb: "76g", fat: "19g" },
+      { name: "Fish", price: 40, cal: 612, pro: "41g", carb: "76g", fat: "20g" },
+      { name: "Shrimp", price: 50, cal: 570, pro: "33g", carb: "76g", fat: "19g" },
+      { name: "Salmon", price: 50, cal: 648, pro: "41g", carb: "76g", fat: "25g" },
+      { name: "Steak", price: 50, cal: 741, pro: "48g", carb: "76g", fat: "26g" },
     ],
   },
   {
     title: "Dieter’s Olive Oil Pasta",
     description:
-      "Olive oil pasta made for a lighter meal option with your choice of protein or veggie.",
+      "Wheat noodles sautéed with bell peppers, onions, broccoli and carrots with olive or coconut oil and protein of your choice.",
     items: [
-      { name: "Veggie", price: 20 },
-      { name: "Chicken", price: 25 },
-      { name: "Fish", price: 35 },
-      { name: "Shrimp", price: 35 },
-      { name: "Salmon", price: 40 },
-      { name: "Steak", price: 40 },
-      { name: "Ground Beef", price: 30 },
-      { name: "Ground Chicken", price: 25 },
+      { name: "Veggie", price: 20, cal: 416, pro: "18g", carb: "89g", fat: "3g" },
+      { name: "Chicken", price: 25, cal: 602, pro: "57g", carb: "89g", fat: "5g" },
+      { name: "Fish", price: 35, cal: 578, pro: "53g", carb: "89g", fat: "6g" },
+      { name: "Shrimp", price: 35, cal: 536, pro: "42g", carb: "91g", fat: "5g" },
+      { name: "Salmon", price: 40, cal: 614, pro: "50g", carb: "89g", fat: "11g" },
+      { name: "Steak", price: 40, cal: 707, pro: "57g", carb: "89g", fat: "12g" },
+      { name: "Ground Beef", price: 30, cal: 721, pro: "50g", carb: "89g", fat: "29g" },
+      { name: "Ground Chicken", price: 25, cal: 656, pro: "48g", carb: "89g", fat: "15g" },
     ],
   },
   {
     title: "Gainer’s Cream Pasta",
     description:
-      "Cream pasta made for a heavier meal option with your choice of protein or veggie.",
+      "Noodles sautéed with bell peppers, onions, broccoli and carrots with special cream sauce.",
     items: [
-      { name: "Veggie", price: 25 },
-      { name: "Chicken", price: 35 },
-      { name: "Fish", price: 40 },
-      { name: "Shrimp", price: 45 },
-      { name: "Salmon", price: 45 },
-      { name: "Steak", price: 50 },
-      { name: "Ground Beef", price: 40 },
-      { name: "Ground Chicken", price: 35 },
+      { name: "Veggie", price: 25, cal: 939, pro: "29g", carb: "127g", fat: "47g" },
+      { name: "Chicken", price: 35, cal: 1075, pro: "66g", carb: "116g", fat: "48g" },
+      { name: "Fish", price: 40, cal: 1051, pro: "62g", carb: "116g", fat: "49g" },
+      { name: "Shrimp", price: 45, cal: 1009, pro: "51g", carb: "116g", fat: "48g" },
+      { name: "Salmon", price: 45, cal: 1087, pro: "59g", carb: "116g", fat: "54g" },
+      { name: "Steak", price: 50, cal: 1180, pro: "66g", carb: "116g", fat: "55g" },
+      { name: "Ground Beef", price: 40, cal: 1254, pro: "59g", carb: "116g", fat: "72g" },
+      { name: "Ground Chicken", price: 35, cal: 1129, pro: "57g", carb: "116g", fat: "58g" },
     ],
   },
   {
     title: "Quesadilla",
     description:
-      "Quesadilla filled with your selected protein, cheese and savory fillings.",
+      "Grilled flour tortilla stuffed with steak or chicken, cheese and jalapeno peppers.",
     items: [
-      { name: "Ground Beef", price: 30 },
-      { name: "Ground Chicken", price: 27 },
-      { name: "Chicken Breast", price: 27 },
-      { name: "Fish", price: 31 },
-      { name: "Shrimp", price: 44 },
-      { name: "Salmon", price: 38 },
-      { name: "Steak", price: 39 },
+      { name: "Ground Beef", price: 30, cal: 952, pro: "56g", carb: "36g", fat: "58g" },
+      { name: "Ground Chicken", price: 27, cal: 869, pro: "55g", carb: "36g", fat: "50g" },
+      { name: "Chicken Breast", price: 27, cal: 833, pro: "61g", carb: "36g", fat: "42g" },
+      { name: "Fish", price: 31, cal: 817, pro: "58g", carb: "36g", fat: "43g" },
+      { name: "Shrimp", price: 44, cal: 829, pro: "59g", carb: "37g", fat: "43g" },
+      { name: "Salmon", price: 38, cal: 841, pro: "56g", carb: "36g", fat: "46g" },
+      { name: "Steak", price: 39, cal: 903, pro: "61g", carb: "36g", fat: "48g" },
     ],
   },
 ];
 
-const countryCodes = [
-  { flag: "🇦🇬", label: "Antigua & Barbuda", code: "+1268" },
-  { flag: "🇺🇸", label: "United States", code: "+1" },
-  { flag: "🇨🇦", label: "Canada", code: "+1" },
-  { flag: "🇬🇧", label: "United Kingdom", code: "+44" },
-  { flag: "🇯🇲", label: "Jamaica", code: "+1876" },
-  { flag: "🇹🇹", label: "Trinidad & Tobago", code: "+1868" },
-  { flag: "🇧🇧", label: "Barbados", code: "+1246" },
-  { flag: "🇬🇾", label: "Guyana", code: "+592" },
-];
-
-const allowedPickupTimes = [
-  "11:00 AM",
-  "11:30 AM",
-  "12:00 PM",
-  "12:30 PM",
-  "1:00 PM",
-  "1:30 PM",
-  "2:00 PM",
-  "2:30 PM",
-  "3:00 PM",
-  "3:30 PM",
-  "4:00 PM",
-  "4:30 PM",
-  "5:00 PM",
-  "5:30 PM",
-  "6:00 PM",
-  "6:30 PM",
-  "7:00 PM",
-  "7:30 PM",
-];
-
-type CartItem = {
-  id: string;
-  category: string;
-  name: string;
-  price: number;
-  quantity: number;
-};
-
-function timeToMinutes(time: string) {
-  const [rawTime, period] = time.split(" ");
-  const [rawHour, rawMinute] = rawTime.split(":");
-
-  let hour = Number(rawHour);
-  const minute = Number(rawMinute);
-
-  if (period === "PM" && hour !== 12) hour += 12;
-  if (period === "AM" && hour === 12) hour = 0;
-
-  return hour * 60 + minute;
-}
-
-function isTuesdayToFriday(dateValue: string) {
-  if (!dateValue) return false;
-
-  const selectedDate = new Date(dateValue + "T00:00:00");
-  const day = selectedDate.getDay();
-
-  return day >= 2 && day <= 5;
-}
-
-function isToday(dateValue: string) {
-  if (!dateValue) return false;
-
-  const today = new Date();
-  const selectedDate = new Date(dateValue + "T00:00:00");
-
-  return (
-    today.getFullYear() === selectedDate.getFullYear() &&
-    today.getMonth() === selectedDate.getMonth() &&
-    today.getDate() === selectedDate.getDate()
-  );
-}
-
-function isOrderingOpenNow() {
-  const now = new Date();
-  const day = now.getDay();
-  const minutes = now.getHours() * 60 + now.getMinutes();
-
-  const isOpenDay = day >= 2 && day <= 5;
-  const orderStart = 9 * 60;
-  const orderEnd = 19 * 60 + 30;
-
-  return isOpenDay && minutes >= orderStart && minutes <= orderEnd;
-}
+/* =========================
+   MAIN MENU PAGE SECTION
+========================= */
 
 export default function MenuPage() {
-  const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [customerName, setCustomerName] = useState("");
-  const [countryCode, setCountryCode] = useState("+1268");
-  const [whatsapp, setWhatsapp] = useState("");
-  const [email, setEmail] = useState("");
-  const [pickupDate, setPickupDate] = useState("");
-  const [pickupTime, setPickupTime] = useState("");
-  const [notes, setNotes] = useState("");
-  const [subscribe, setSubscribe] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
+  const [cartTotal, setCartTotal] = useState(0);
 
-  const activeCategory = menuCategories[activeCategoryIndex];
-  const orderingOpen = isOrderingOpenNow();
+  const activeCategory = menuCategories[activeIndex];
+  const nextCategory = menuCategories[(activeIndex + 1) % menuCategories.length];
 
-  const availablePickupTimes = useMemo(() => {
-    if (!pickupDate) return allowedPickupTimes;
+  function updateCartSummary() {
+    const cart = JSON.parse(localStorage.getItem("macroMealsCart") || "[]");
 
-    if (!isToday(pickupDate)) return allowedPickupTimes;
-
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-    return allowedPickupTimes.filter(
-      (time) => timeToMinutes(time) > currentMinutes
+    const totalItems = cart.reduce(
+      (total: number, meal: any) => total + meal.quantity,
+      0
     );
-  }, [pickupDate]);
 
-  const subtotal = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+    const totalPrice = cart.reduce(
+      (total: number, meal: any) => total + meal.price * meal.quantity,
+      0
+    );
 
-  function addToCart(category: string, item: { name: string; price: number }) {
-    const id = `${category}-${item.name}`;
-
-    setCart((currentCart) => {
-      const existingItem = currentCart.find((cartItem) => cartItem.id === id);
-
-      if (existingItem) {
-        return currentCart.map((cartItem) =>
-          cartItem.id === id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        );
-      }
-
-      return [
-        ...currentCart,
-        {
-          id,
-          category,
-          name: item.name,
-          price: item.price,
-          quantity: 1,
-        },
-      ];
-    });
+    setCartCount(totalItems);
+    setCartTotal(totalPrice);
   }
 
-  function decreaseItem(id: string) {
-    setCart((currentCart) =>
-      currentCart
-        .map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-        )
-        .filter((item) => item.quantity > 0)
+  useEffect(() => {
+    updateCartSummary();
+  }, []);
+
+  function goPrevious() {
+    setActiveIndex((current) =>
+      current === 0 ? menuCategories.length - 1 : current - 1
     );
   }
 
-  function increaseItem(id: string) {
-    setCart((currentCart) =>
-      currentCart.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
+  function goNext() {
+    setActiveIndex((current) =>
+      current === menuCategories.length - 1 ? 0 : current + 1
     );
   }
 
-  function removeItem(id: string) {
-    setCart((currentCart) => currentCart.filter((item) => item.id !== id));
-  }
+  function addToCart(item: any) {
+    const cart = JSON.parse(localStorage.getItem("macroMealsCart") || "[]");
 
-  async function submitOrder() {
-    if (!orderingOpen) {
-      alert("Ordering is available Tuesday to Friday from 9:00 AM to 7:30 PM.");
-      return;
-    }
-
-    if (cart.length === 0) {
-      alert("Please add at least one meal to your order.");
-      return;
-    }
-
-    if (!customerName || !whatsapp || !pickupDate || !pickupTime) {
-      alert("Please fill in your name, WhatsApp number, pickup date and pickup time.");
-      return;
-    }
-
-    if (!isTuesdayToFriday(pickupDate)) {
-      alert("Pickup is only available Tuesday to Friday.");
-      return;
-    }
-
-    if (!availablePickupTimes.includes(pickupTime)) {
-      alert("Please choose an available pickup time between 11:00 AM and 7:30 PM.");
-      return;
-    }
-
-    setLoading(true);
-
-    const fullWhatsapp = `${countryCode}${whatsapp}`;
-
-    const orderItems = cart.map((item) => ({
-      category: item.category,
+    const cartItem = {
+      id: `${activeCategory.title}-${item.name}`,
+      category: activeCategory.title,
       name: item.name,
       price: item.price,
-      quantity: item.quantity,
-    }));
+      cal: item.cal,
+      pro: item.pro,
+      carb: item.carb,
+      fat: item.fat,
+      quantity: 1,
+    };
 
-    const { error } = await supabase.from("orders").insert([
-      {
-        customer_name: customerName,
-        whatsapp: fullWhatsapp,
-        email,
-        pickup_date: pickupDate,
-        pickup_time: pickupTime,
-        notes,
-        subscribe,
-        items: orderItems,
-        subtotal,
-        status: "Pending",
-      },
-    ]);
+    const existingItem = cart.find((meal: any) => meal.id === cartItem.id);
 
-    if (error) {
-      console.error(error);
-      alert("Failed to submit order.");
-      setLoading(false);
-      return;
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push(cartItem);
     }
 
-    window.location.href = "/order-success";
+    localStorage.setItem("macroMealsCart", JSON.stringify(cart));
+    updateCartSummary();
   }
 
   return (
-    <main className="min-h-screen bg-[#f3f3f3] px-4 py-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8 rounded-3xl bg-white p-6 text-center shadow-xl">
-          <Image
+    <main className="min-h-screen bg-[#f3f3f3] px-4 py-8 pb-28">
+      <div className="mx-auto max-w-5xl">
+
+        {/* =========================
+           HEADER SECTION
+        ========================= */}
+
+        <div className="mb-6 text-center">
+          <img
             src="/logo.png"
             alt="Macro Meals On Wheels"
-            width={130}
-            height={130}
-            className="mx-auto mb-4"
+            className="mx-auto mb-4 w-32 md:w-44"
           />
 
-          <h1 className="text-4xl font-black text-[#060d57] md:text-6xl">
-            Order Meals
+          <h1 className="text-5xl font-black text-[#060d57] md:text-6xl">
+            OUR MENU
           </h1>
 
-          <p className="mx-auto mt-3 max-w-2xl font-semibold text-gray-600">
-            Order fresh meals Tuesday to Friday from 9:00 AM. Pickup is available
-            from 11:00 AM to 7:30 PM.
+          <p className="mt-3 text-lg font-bold text-[#75a62f]">
+            Choose your meal. Pick your protein. Fuel your goals.
           </p>
 
-          <div className="mx-auto mt-5 flex max-w-md flex-wrap items-center justify-center gap-3 rounded-2xl bg-[#f3f3f3] px-5 py-4 shadow-inner">
-            <div className="text-center">
-              <p className="text-xs font-black uppercase tracking-wide text-[#75a62f]">
-                Order Days
-              </p>
-
-              <p className="mt-1 text-sm font-black text-[#060d57]">
-                Tuesday - Friday
-              </p>
-            </div>
-
-            <div className="h-10 w-px bg-gray-300" />
-
-            <div className="text-center">
-              <p className="text-xs font-black uppercase tracking-wide text-[#75a62f]">
-                Ordering Starts
-              </p>
-
-              <p className="mt-1 text-sm font-black text-[#060d57]">
-                9:00 AM
-              </p>
-            </div>
-
-            <div className="h-10 w-px bg-gray-300" />
-
-            <div className="text-center">
-              <p className="text-xs font-black uppercase tracking-wide text-[#75a62f]">
-                Pickup Hours
-              </p>
-
-              <p className="mt-1 text-sm font-black text-[#060d57]">
-                11:00 AM - 7:30 PM
-              </p>
-            </div>
-          </div>
-
-          {!orderingOpen && (
-            <div className="mx-auto mt-5 max-w-xl rounded-2xl border-2 border-red-500 bg-red-50 p-4">
-              <p className="font-black text-red-600">
-                Online ordering is currently closed.
-              </p>
-
-              <p className="mt-1 text-sm font-semibold text-red-600">
-                Orders can be placed Tuesday to Friday from 9:00 AM to 7:30 PM.
-              </p>
-            </div>
-          )}
+          <a
+            href="/cart"
+            className="mt-5 hidden rounded-2xl bg-[#75a62f] px-6 py-3 font-bold text-white md:inline-block"
+          >
+            View Order ({cartCount}) - ${cartTotal}
+          </a>
         </div>
 
-        <div className="mb-8 rounded-3xl bg-white p-5 shadow-xl">
-          <p className="mb-3 text-sm font-black uppercase tracking-wide text-[#060d57]">
-            Meal Categories
-          </p>
+        {/* =========================
+           ACTIVE CATEGORY CARD SECTION
+        ========================= */}
 
-          <div className="flex flex-wrap gap-2">
-            {menuCategories.map((category, index) => (
-              <button
-                key={category.title}
-                onClick={() => setActiveCategoryIndex(index)}
-                className={`rounded-2xl px-4 py-3 text-sm font-black ${
-                  activeCategoryIndex === index
-                    ? "bg-[#060d57] text-white"
-                    : "bg-[#f3f3f3] text-[#060d57]"
-                }`}
-              >
-                {category.title}
-              </button>
-            ))}
-          </div>
-        </div>
+        <section className="rounded-3xl bg-white p-5 shadow-xl md:p-6">
+          <div className="mb-4 text-center">
+            <p className="text-sm font-bold text-[#75a62f]">
+              Category {activeIndex + 1} of {menuCategories.length}
+            </p>
 
-        <div className="grid gap-8 lg:grid-cols-3">
-          <section className="rounded-3xl bg-white p-6 shadow-xl lg:col-span-2">
-            <h2 className="text-3xl font-black text-[#060d57]">
+            <h2 className="mt-2 text-4xl font-black text-[#060d57]">
               {activeCategory.title}
             </h2>
 
-            <p className="mt-2 mb-5 font-semibold text-gray-600">
+            <p className="mt-3 leading-relaxed text-gray-600">
               {activeCategory.description}
             </p>
+          </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              {activeCategory.items.map((item) => (
-                <div
-                  key={`${activeCategory.title}-${item.name}`}
-                  className="rounded-3xl bg-[#f3f3f3] p-5"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-xl font-black text-[#060d57]">
-                        {item.name}
-                      </p>
+          {/* =========================
+             CATEGORY NAVIGATION SECTION
+          ========================= */}
 
-                      <p className="mt-2 text-2xl font-black text-[#75a62f]">
-                        ${item.price}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => addToCart(activeCategory.title, item)}
-                      className="rounded-2xl bg-[#060d57] px-5 py-3 font-black text-white"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="rounded-3xl bg-white p-6 shadow-xl">
-            <h2 className="mb-5 text-3xl font-black text-[#060d57]">
-              Your Order
-            </h2>
-
-            {cart.length === 0 ? (
-              <p className="rounded-2xl bg-[#f3f3f3] p-4 font-semibold text-gray-600">
-                No meals added yet.
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {cart.map((item) => (
-                  <div key={item.id} className="rounded-2xl bg-[#f3f3f3] p-4">
-                    <p className="text-sm font-black text-[#75a62f]">
-                      {item.category}
-                    </p>
-
-                    <p className="text-lg font-black text-[#060d57]">
-                      {item.name}
-                    </p>
-
-                    <p className="mt-1 text-sm font-bold text-gray-600">
-                      ${item.price} each
-                    </p>
-
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => decreaseItem(item.id)}
-                          className="h-10 w-10 rounded-xl bg-white font-black text-[#060d57]"
-                        >
-                          −
-                        </button>
-
-                        <span className="min-w-8 text-center text-lg font-black text-[#060d57]">
-                          {item.quantity}
-                        </span>
-
-                        <button
-                          onClick={() => increaseItem(item.id)}
-                          className="h-10 w-10 rounded-xl bg-[#060d57] font-black text-white"
-                        >
-                          +
-                        </button>
-                      </div>
-
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="rounded-xl bg-red-50 px-4 py-2 font-black text-red-500"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                ))}
+          <div className="mb-6 mt-5 rounded-3xl bg-[#f3f3f3] p-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-white p-3 text-left shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-wide text-[#75a62f]">
+                  Current Category
+                </p>
+                <p className="mt-1 text-sm font-black text-[#060d57]">
+                  {activeCategory.title}
+                </p>
               </div>
-            )}
-
-            <div className="mt-5 rounded-2xl bg-[#060d57] p-5 text-white">
-              <div className="flex justify-between text-2xl font-black">
-                <span>Total</span>
-                <span>${subtotal}</span>
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-4">
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                className="w-full rounded-2xl border border-gray-300 px-5 py-4 font-semibold text-[#060d57] outline-none focus:border-[#75a62f]"
-              />
-
-              <div className="grid grid-cols-3 gap-3">
-                <select
-                  value={countryCode}
-                  onChange={(e) => setCountryCode(e.target.value)}
-                  className="rounded-2xl border border-gray-300 px-3 py-4 font-semibold text-[#060d57] outline-none focus:border-[#75a62f]"
-                >
-                  {countryCodes.map((country) => (
-                    <option
-                      key={`${country.label}-${country.code}`}
-                      value={country.code}
-                    >
-                      {country.flag} {country.code}
-                    </option>
-                  ))}
-                </select>
-
-                <input
-                  type="tel"
-                  placeholder="WhatsApp Number"
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  className="col-span-2 rounded-2xl border border-gray-300 px-5 py-4 font-semibold text-[#060d57] outline-none focus:border-[#75a62f]"
-                />
-              </div>
-
-              <input
-                type="email"
-                placeholder="Email Address optional"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-2xl border border-gray-300 px-5 py-4 font-semibold text-[#060d57] outline-none focus:border-[#75a62f]"
-              />
-
-              <div>
-                <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Pickup Date
-                </label>
-
-                <input
-                  type="date"
-                  value={pickupDate}
-                  onChange={(e) => {
-                    setPickupDate(e.target.value);
-                    setPickupTime("");
-                  }}
-                  className="w-full rounded-2xl border border-gray-300 px-5 py-4 font-semibold text-[#060d57] outline-none focus:border-[#75a62f]"
-                />
-
-                {pickupDate && !isTuesdayToFriday(pickupDate) && (
-                  <p className="mt-2 text-sm font-black text-red-500">
-                    Pickup is only available Tuesday to Friday.
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Pickup Time
-                </label>
-
-                <select
-                  value={pickupTime}
-                  onChange={(e) => setPickupTime(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 font-semibold text-[#060d57] outline-none focus:border-[#75a62f]"
-                >
-                  <option value="">Select pickup time</option>
-
-                  {availablePickupTimes.map((time) => (
-                    <option key={time} value={time}>
-                      {time}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <textarea
-                placeholder="Order notes optional"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                className="h-28 w-full rounded-2xl border border-gray-300 px-5 py-4 font-semibold text-[#060d57] outline-none focus:border-[#75a62f]"
-              />
-
-              <label className="flex items-start gap-3 rounded-2xl bg-[#f3f3f3] p-4">
-                <input
-                  type="checkbox"
-                  checked={subscribe}
-                  onChange={() => setSubscribe(!subscribe)}
-                  className="mt-1"
-                />
-
-                <span className="text-sm font-bold text-[#060d57]">
-                  Yes, I’d like to receive updates, discounts and special meal
-                  offers.
-                </span>
-              </label>
 
               <button
-                onClick={submitOrder}
-                disabled={loading || !orderingOpen}
-                className={`w-full rounded-2xl py-4 font-black text-white ${
-                  loading || !orderingOpen
-                    ? "cursor-not-allowed bg-gray-400"
-                    : "bg-[#75a62f]"
-                }`}
+                onClick={goNext}
+                className="rounded-2xl bg-white p-3 text-left shadow-sm"
               >
-                {loading ? "Submitting Order..." : "Submit Order"}
+                <p className="text-[10px] font-black uppercase tracking-wide text-[#75a62f]">
+                  Up Next
+                </p>
+                <p className="mt-1 text-sm font-black text-[#060d57]">
+                  {nextCategory.title}
+                </p>
+              </button>
+            </div>
+
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <button
+                onClick={goPrevious}
+                className="rounded-2xl bg-white py-3 text-sm font-black text-[#060d57] shadow-sm"
+              >
+                ← Back
               </button>
 
-              <a
-                href="/request-packed-meals"
-                className="block rounded-2xl border-2 border-[#060d57] py-4 text-center font-black text-[#060d57]"
+              <button
+                onClick={goNext}
+                className="rounded-2xl bg-[#75a62f] py-3 text-sm font-black text-white shadow-sm"
               >
-                Request Weekly Packed Meals
-              </a>
+                Next →
+              </button>
             </div>
-          </section>
-        </div>
+
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {menuCategories.map((category, index) => (
+                <button
+                  key={category.title}
+                  onClick={() => setActiveIndex(index)}
+                  className={`h-2.5 rounded-full transition-all ${
+                    activeIndex === index
+                      ? "w-8 bg-[#060d57]"
+                      : "w-2.5 bg-gray-300"
+                  }`}
+                  aria-label={`Go to ${category.title}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* =========================
+             MENU ITEMS SECTION
+          ========================= */}
+
+          <div className="space-y-4">
+            {activeCategory.items.map((item) => (
+              <div
+                key={item.name}
+                className="rounded-2xl border border-gray-200 p-4"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-xl font-black text-[#060d57]">
+                        {item.name}
+                      </h3>
+
+                      <span className="rounded-full bg-[#75a62f]/10 px-3 py-1 text-lg font-black text-[#75a62f]">
+                        ${item.price}
+                      </span>
+                    </div>
+
+                    <p className="mt-2 text-sm text-gray-600">
+                      {item.cal} Cal | {item.pro} Protein | {item.carb} Carb |{" "}
+                      {item.fat} Fat
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => addToCart(item)}
+                    className="shrink-0 rounded-xl bg-[#060d57] px-6 py-3 font-bold text-white hover:bg-[#0b1675]"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* =========================
+           STICKY MOBILE CART SECTION
+        ========================= */}
+
+        {cartCount > 0 && (
+          <a
+            href="/cart"
+            className="fixed bottom-4 left-4 right-4 z-50 rounded-3xl bg-[#060d57] px-5 py-4 text-white shadow-2xl md:hidden"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-white/70">
+                  {cartCount} item{cartCount > 1 ? "s" : ""}
+                </p>
+
+                <p className="text-2xl font-black">View Order</p>
+              </div>
+
+              <div className="rounded-2xl bg-[#75a62f] px-5 py-3 text-xl font-black">
+                ${cartTotal}
+              </div>
+            </div>
+          </a>
+        )}
       </div>
     </main>
   );
