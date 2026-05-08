@@ -31,6 +31,15 @@ const statuses = [
   "Cancelled",
 ];
 
+const topStatusCards = [
+  "All",
+  "Pending",
+  "Preparing",
+  "Ready for Pickup",
+  "Ready Message Sent",
+  "Pickup Complete",
+];
+
 const filterOptions = [
   "All",
   "Pending",
@@ -146,9 +155,9 @@ Thank you for ordering with Macro Meals On Wheels.`;
       ? orders
       : orders.filter((order) => order.status === activeFilter);
 
-  function getFilterCount(filter: string) {
-    if (filter === "All") return orders.length;
-    return orders.filter((order) => order.status === filter).length;
+  function getCount(status: string) {
+    if (status === "All") return orders.length;
+    return orders.filter((order) => order.status === status).length;
   }
 
   if (!authorized) return null;
@@ -192,20 +201,16 @@ Thank you for ordering with Macro Meals On Wheels.`;
         </div>
 
         <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-          {filterOptions.map((status) => (
+          {topStatusCards.map((status) => (
             <div
               key={status}
               className={`rounded-3xl p-5 shadow-lg ${
-                status === "Pickup Complete"
-                  ? "bg-[#060d57] text-white"
-                  : "bg-white"
+                status === "Pickup Complete" ? "bg-[#060d57] text-white" : "bg-white"
               }`}
             >
               <p
                 className={`text-sm font-black uppercase ${
-                  status === "Pickup Complete"
-                    ? "text-white/70"
-                    : "text-[#75a62f]"
+                  status === "Pickup Complete" ? "text-white/70" : "text-[#75a62f]"
                 }`}
               >
                 {status}
@@ -213,12 +218,10 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
               <p
                 className={`mt-2 text-3xl font-black ${
-                  status === "Pickup Complete"
-                    ? "text-white"
-                    : "text-[#060d57]"
+                  status === "Pickup Complete" ? "text-white" : "text-[#060d57]"
                 }`}
               >
-                {getFilterCount(status)}
+                {getCount(status)}
               </p>
             </div>
           ))}
@@ -240,7 +243,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
                     : "bg-[#f3f3f3] text-[#060d57]"
                 }`}
               >
-                {filter} ({getFilterCount(filter)})
+                {filter} ({getCount(filter)})
               </button>
             ))}
           </div>
@@ -248,27 +251,20 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
         {loading && (
           <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
-            <p className="text-xl font-black text-[#060d57]">
-              Loading orders...
-            </p>
+            <p className="text-xl font-black text-[#060d57]">Loading orders...</p>
           </div>
         )}
 
         {!loading && filteredOrders.length === 0 && (
           <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
-            <p className="text-xl font-black text-[#060d57]">
-              No orders found.
-            </p>
+            <p className="text-xl font-black text-[#060d57]">No orders found.</p>
           </div>
         )}
 
         {!loading && filteredOrders.length > 0 && (
           <div className="grid gap-6">
             {filteredOrders.map((order) => (
-              <section
-                key={order.id}
-                className="rounded-3xl bg-white p-6 shadow-xl"
-              >
+              <section key={order.id} className="rounded-3xl bg-white p-6 shadow-xl">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
                   <div>
                     <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
@@ -330,9 +326,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
                     <div className="mt-3 flex flex-col gap-3">
                       <select
                         value={order.status || "Pending"}
-                        onChange={(e) =>
-                          updateStatus(order.id, e.target.value)
-                        }
+                        onChange={(e) => updateStatus(order.id, e.target.value)}
                         className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 font-black text-[#060d57]"
                       >
                         {statuses.map((status) => (
@@ -353,9 +347,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
                       {order.status === "Preparing" && (
                         <button
-                          onClick={() =>
-                            updateStatus(order.id, "Ready for Pickup")
-                          }
+                          onClick={() => updateStatus(order.id, "Ready for Pickup")}
                           className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
                         >
                           Mark Ready for Pickup
@@ -373,9 +365,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
                       {order.status === "Ready Message Sent" && (
                         <button
-                          onClick={() =>
-                            updateStatus(order.id, "Pickup Complete")
-                          }
+                          onClick={() => updateStatus(order.id, "Pickup Complete")}
                           className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
                         >
                           Pickup Complete
@@ -402,10 +392,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
                   <div className="grid gap-3 md:grid-cols-2">
                     {order.items.map((item, index) => (
-                      <div
-                        key={`${item.name}-${index}`}
-                        className="rounded-2xl bg-white p-4"
-                      >
+                      <div key={`${item.name}-${index}`} className="rounded-2xl bg-white p-4">
                         <p className="text-sm font-black text-[#75a62f]">
                           {item.category}
                         </p>
