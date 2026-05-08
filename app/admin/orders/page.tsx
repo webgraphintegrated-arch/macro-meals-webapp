@@ -37,6 +37,15 @@ const statuses = [
   "Cancelled",
 ];
 
+const filterOptions = [
+  "All",
+  "Pending",
+  "Preparing",
+  "Ready for Pickup",
+  "Completed",
+  "Cancelled",
+];
+
 /* =========================
    PAGE
 ========================= */
@@ -45,6 +54,7 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("All");
 
   /* =========================
      FETCH ORDERS
@@ -159,6 +169,28 @@ Thank you for ordering with Macro Meals On Wheels.`;
     window.location.href = "/admin/login";
   }
 
+  /* =========================
+     FILTER + STATS
+  ========================= */
+
+  const filteredOrders =
+    activeFilter === "All"
+      ? orders
+      : orders.filter((order) => order.status === activeFilter);
+
+  const totalSales = orders.reduce((total, order) => total + Number(order.subtotal), 0);
+
+  const pendingCount = orders.filter((order) => order.status === "Pending").length;
+  const preparingCount = orders.filter((order) => order.status === "Preparing").length;
+  const readyCount = orders.filter((order) => order.status === "Ready for Pickup").length;
+  const completedCount = orders.filter((order) => order.status === "Completed").length;
+  const cancelledCount = orders.filter((order) => order.status === "Cancelled").length;
+
+  function getFilterCount(filter: string) {
+    if (filter === "All") return orders.length;
+    return orders.filter((order) => order.status === filter).length;
+  }
+
   if (!authorized) {
     return null;
   }
@@ -173,18 +205,18 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
         {/* HEADER */}
 
-        <div className="mb-8 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-xl md:flex-row md:items-center md:justify-between">
+        <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-xl md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-4xl font-black text-[#060d57]">
               Admin Orders
             </h1>
 
             <p className="mt-2 font-semibold text-gray-600">
-              Live customer orders dashboard.
+              Live customer orders dashboard with filters and order status tracking.
             </p>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <a
               href="/menu"
               className="rounded-2xl border-2 border-[#060d57] px-5 py-3 font-black text-[#060d57]"
@@ -193,11 +225,76 @@ Thank you for ordering with Macro Meals On Wheels.`;
             </a>
 
             <button
+              onClick={fetchOrders}
+              className="rounded-2xl bg-[#060d57] px-5 py-3 font-black text-white"
+            >
+              Refresh
+            </button>
+
+            <button
               onClick={logout}
               className="rounded-2xl bg-red-500 px-5 py-3 font-black text-white"
             >
               Logout
             </button>
+          </div>
+        </div>
+
+        {/* STATS */}
+
+        <div className="mb-6 grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+          <div className="rounded-3xl bg-white p-5 shadow-lg">
+            <p className="text-sm font-black uppercase text-[#75a62f]">All Orders</p>
+            <p className="mt-2 text-3xl font-black text-[#060d57]">{orders.length}</p>
+          </div>
+
+          <div className="rounded-3xl bg-white p-5 shadow-lg">
+            <p className="text-sm font-black uppercase text-[#75a62f]">Pending</p>
+            <p className="mt-2 text-3xl font-black text-[#060d57]">{pendingCount}</p>
+          </div>
+
+          <div className="rounded-3xl bg-white p-5 shadow-lg">
+            <p className="text-sm font-black uppercase text-[#75a62f]">Preparing</p>
+            <p className="mt-2 text-3xl font-black text-[#060d57]">{preparingCount}</p>
+          </div>
+
+          <div className="rounded-3xl bg-white p-5 shadow-lg">
+            <p className="text-sm font-black uppercase text-[#75a62f]">Ready</p>
+            <p className="mt-2 text-3xl font-black text-[#060d57]">{readyCount}</p>
+          </div>
+
+          <div className="rounded-3xl bg-white p-5 shadow-lg">
+            <p className="text-sm font-black uppercase text-[#75a62f]">Completed</p>
+            <p className="mt-2 text-3xl font-black text-[#060d57]">{completedCount}</p>
+          </div>
+
+          <div className="rounded-3xl bg-[#060d57] p-5 text-white shadow-lg">
+            <p className="text-sm font-black uppercase text-white/70">Total Sales</p>
+            <p className="mt-2 text-3xl font-black">${totalSales}</p>
+          </div>
+        </div>
+
+        {/* FILTER BUTTONS */}
+
+        <div className="mb-8 rounded-3xl bg-white p-4 shadow-xl">
+          <p className="mb-3 text-sm font-black uppercase tracking-wide text-[#060d57]">
+            Filter Orders
+          </p>
+
+          <div className="flex flex-wrap gap-3">
+            {filterOptions.map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`rounded-2xl px-5 py-3 text-sm font-black transition ${
+                  activeFilter === filter
+                    ? "bg-[#060d57] text-white"
+                    : "bg-[#f3f3f3] text-[#060d57]"
+                }`}
+              >
+                {filter} ({getFilterCount(filter)})
+              </button>
+            ))}
           </div>
         </div>
 
@@ -213,23 +310,39 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
         {/* NO ORDERS */}
 
-        {!loading && orders.length === 0 && (
+        {!loading && filteredOrders.length === 0 && (
           <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
             <p className="text-xl font-black text-[#060d57]">
-              No orders yet.
+              No {activeFilter === "All" ? "" : activeFilter} orders found.
             </p>
           </div>
         )}
 
         {/* ORDERS */}
 
-        {!loading && orders.length > 0 && (
+        {!loading && filteredOrders.length > 0 && (
           <div className="grid gap-6">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <section
                 key={order.id}
                 className="rounded-3xl bg-white p-6 shadow-xl"
               >
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
+                  <div>
+                    <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
+                      Order Status
+                    </p>
+
+                    <p className="text-2xl font-black text-[#060d57]">
+                      {order.status}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-[#f3f3f3] px-4 py-3 text-sm font-black text-[#060d57]">
+                    Ordered: {new Date(order.created_at).toLocaleString()}
+                  </div>
+                </div>
+
                 <div className="grid gap-6 lg:grid-cols-3">
 
                   {/* CUSTOMER */}
@@ -249,14 +362,6 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
                     <p className="text-sm font-semibold text-gray-700">
                       Email: {order.email || "N/A"}
-                    </p>
-
-                    <p className="mt-4 text-sm font-semibold text-gray-700">
-                      Ordered:
-                    </p>
-
-                    <p className="text-sm font-black text-[#060d57]">
-                      {new Date(order.created_at).toLocaleString()}
                     </p>
                   </div>
 
@@ -296,7 +401,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
                   <div>
                     <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
-                      Status
+                      Update Status
                     </p>
 
                     <select
