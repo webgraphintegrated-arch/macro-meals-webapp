@@ -64,16 +64,16 @@ export default function Home() {
         <section className="flex flex-1 items-center justify-center py-6">
           <div className="w-full max-w-xl rounded-[2rem] bg-white/90 p-6 text-center shadow-2xl backdrop-blur md:p-8">
             <Image
-              src="/logo.png"
-              alt="Macro Meals On Wheels"
-              width={130}
-              height={130}
-              className="mx-auto mb-4"
-            />
+  src="/logo.png"
+  alt="Macro Meals On Wheels"
+  width={170}
+  height={170}
+  className="mx-auto mb-5"
+/>
 
-            <h1 className="text-4xl font-black leading-none text-[#060d57] md:text-6xl">
-              FUEL YOUR BODY
-            </h1>
+            <h1 className="text-3xl font-black tracking-[-0.03em] text-[#060d57] sm:text-5xl md:text-6xl">
+  FUEL YOUR BODY
+</h1>
 
             <p className="mt-3 text-sm font-black uppercase tracking-wide text-[#75a62f]">
               Powered by Health Addictions
@@ -108,7 +108,7 @@ export default function Home() {
 
         <footer className="border-t border-white/70 py-4 text-center">
           <p className="text-xs font-semibold text-gray-600">
-            Developed by{" "}
+            Designed &Developed by{" "}
             <a
               href="https://webgraphintegrated.com/"
               target="_blank"
