@@ -7,32 +7,22 @@ export default function Home() {
   const [showPopup, setShowPopup] = useState(true);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#dff4e4] via-[#eaf7ef] to-[#ccefd9] px-6 py-8">
-      {/* Soft bubble texture */}
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#dff4e4] via-[#eef9f1] to-[#ccefd9] px-5 py-6">
       <div className="absolute inset-0 opacity-60">
-        <div className="absolute left-[-60px] top-[-70px] h-80 w-80 rounded-full bg-white/40" />
-        <div className="absolute left-[12%] top-[18%] h-28 w-28 rounded-full bg-white/35" />
-        <div className="absolute right-[10%] top-[12%] h-44 w-44 rounded-full bg-[#75a62f]/20" />
-        <div className="absolute bottom-[12%] left-[8%] h-52 w-52 rounded-full bg-white/30" />
-        <div className="absolute bottom-[-90px] right-[-70px] h-96 w-96 rounded-full bg-[#75a62f]/25" />
-        <div className="absolute left-[40%] top-[8%] h-24 w-24 rounded-full bg-white/25" />
-      </div>
-
-      {/* Wave lines */}
-      <div className="absolute bottom-0 left-0 h-56 w-full opacity-30">
-        <div className="h-full w-[140%] -translate-x-20 rounded-[50%] border-t border-white" />
-        <div className="-mt-48 h-full w-[140%] -translate-x-10 rounded-[50%] border-t border-white" />
-        <div className="-mt-48 h-full w-[140%] rounded-[50%] border-t border-white" />
+        <div className="absolute left-[-80px] top-[-80px] h-80 w-80 rounded-full bg-white/40" />
+        <div className="absolute right-[-80px] top-20 h-72 w-72 rounded-full bg-[#75a62f]/20" />
+        <div className="absolute bottom-[-100px] left-[20%] h-96 w-96 rounded-full bg-white/30" />
+        <div className="absolute bottom-[-90px] right-[-60px] h-80 w-80 rounded-full bg-[#060d57]/10" />
       </div>
 
       {showPopup && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-xs rounded-3xl bg-white/95 p-4 shadow-2xl backdrop-blur">
+        <div className="fixed bottom-5 right-5 z-50 max-w-xs rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-black uppercase text-[#75a62f]">
                 Coming Soon
               </p>
-              <p className="mt-2 text-sm font-bold text-gray-700">
+              <p className="mt-1 text-sm font-bold text-gray-700">
                 Customer accounts and goal-based meal suggestions.
               </p>
             </div>
@@ -47,74 +37,70 @@ export default function Home() {
         </div>
       )}
 
-      <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-4xl flex-col justify-between">
-        <div className="flex justify-end gap-3">
+      <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] max-w-3xl flex-col justify-between">
+        <div className="flex justify-end gap-2">
           <a
             href="/admin/login"
-            className="rounded-2xl border-2 border-[#060d57] bg-white/85 px-5 py-3 text-sm font-black text-[#060d57] shadow-lg backdrop-blur transition hover:bg-[#060d57] hover:text-white"
+            className="rounded-xl border-2 border-[#060d57] bg-white/85 px-4 py-2 text-xs font-black text-[#060d57] shadow-md transition hover:bg-[#060d57] hover:text-white"
           >
             Staff Login
           </a>
 
           <a
             href="/admin/login"
-            className="rounded-2xl bg-[#060d57] px-5 py-3 text-sm font-black text-white shadow-lg transition hover:opacity-90"
+            className="rounded-xl bg-[#060d57] px-4 py-2 text-xs font-black text-white shadow-md transition hover:opacity-90"
           >
             Owner Login
           </a>
         </div>
 
-        <section className="flex flex-1 items-center justify-center py-8">
-          <div className="w-full max-w-3xl rounded-[2rem] bg-white/88 p-7 text-center shadow-2xl backdrop-blur md:p-10">
+        <section className="flex flex-1 items-center justify-center py-6">
+          <div className="w-full max-w-xl rounded-[2rem] bg-white/90 p-6 text-center shadow-2xl backdrop-blur md:p-8">
             <Image
               src="/logo.png"
               alt="Macro Meals On Wheels"
-              width={150}
-              height={150}
-              className="mx-auto mb-5"
+              width={130}
+              height={130}
+              className="mx-auto mb-4"
             />
 
-            <h1 className="text-5xl font-black leading-none text-[#060d57] md:text-7xl">
-              FUEL YOUR
-              <br />
-              BODY
+            <h1 className="text-4xl font-black leading-none text-[#060d57] md:text-6xl">
+              FUEL YOUR BODY
             </h1>
 
-            <p className="mt-5 text-xl font-bold text-[#75a62f]">
+            <p className="mt-3 text-sm font-black uppercase tracking-wide text-[#75a62f]">
+              Powered by Health Addictions
+            </p>
+
+            <p className="mt-3 text-lg font-bold text-[#75a62f]">
               Healthy Meals Made Simple
             </p>
 
-            <p className="mx-auto mt-4 max-w-xl text-sm font-semibold leading-relaxed text-gray-700 md:text-base">
+            <p className="mx-auto mt-3 max-w-md text-sm font-semibold leading-relaxed text-gray-700">
               Order fresh daily meals or request 7+ packed meals prepared ahead
               for pickup.
             </p>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-2">
+            <div className="mt-6 flex flex-col gap-3">
               <a
                 href="/menu"
-                className="rounded-3xl bg-[#75a62f] p-6 text-white shadow-lg transition hover:scale-[1.02]"
+                className="rounded-2xl bg-[#75a62f] px-6 py-4 text-center text-lg font-black text-white shadow-lg transition hover:scale-[1.01]"
               >
-                <p className="text-sm font-black uppercase text-white/80">
-                  Daily Ordering
-                </p>
-                <p className="mt-2 text-3xl font-black">Order Now</p>
+                Order Now
               </a>
 
               <a
                 href="/request-packed-meals"
-                className="rounded-3xl bg-[#060d57] p-6 text-white shadow-lg transition hover:scale-[1.02]"
+                className="rounded-2xl bg-[#060d57] px-6 py-4 text-center text-lg font-black text-white shadow-lg transition hover:scale-[1.01]"
               >
-                <p className="text-sm font-black uppercase text-white/70">
-                  Weekly Meal Prep
-                </p>
-                <p className="mt-2 text-3xl font-black">Packed Meals</p>
+                Weekly Packed Meals
               </a>
             </div>
           </div>
         </section>
 
-        <footer className="border-t border-white/70 py-5 text-center">
-          <p className="text-sm font-semibold text-gray-600">
+        <footer className="border-t border-white/70 py-4 text-center">
+          <p className="text-xs font-semibold text-gray-600">
             Developed by{" "}
             <a
               href="https://webgraphintegrated.com/"
