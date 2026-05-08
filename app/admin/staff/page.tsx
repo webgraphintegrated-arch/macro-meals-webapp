@@ -3,10 +3,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-/* =========================
-   TYPES
-========================= */
-
 type OrderItem = {
   category: string;
   name: string;
@@ -18,41 +14,33 @@ type Order = {
   id: string;
   customer_name: string;
   whatsapp: string;
-  email: string | null;
   pickup_date: string;
   pickup_time: string;
   notes: string | null;
-  subscribe: boolean;
   items: OrderItem[];
-  subtotal: number;
   status: string;
   created_at: string;
 };
 
-const statuses = ["Pending", "Preparing", "Ready for Pickup", "Completed"];
-
-const filterOptions = ["All", "Pending", "Preparing", "Ready for Pickup", "Completed"];
-
-/* =========================
-   STAFF DASHBOARD PAGE
-========================= */
+const filterOptions = [
+  "All",
+  "Pending",
+  "Preparing",
+  "Ready for Pickup",
+  "Pickup Complete",
+  "Cancelled",
+];
 
 export default function StaffOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
-  const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
-
-  /* =========================
-     FETCH ORDERS
-  ========================= */
 
   async function fetchOrders() {
     const { data, error } = await supabase
       .from("orders")
       .select("*")
-      .neq("status", "Cancelled")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -64,10 +52,6 @@ export default function StaffOrdersPage() {
     setLoading(false);
   }
 
-  /* =========================
-     LOAD + REALTIME + AUTO REFRESH
-  ========================= */
-
   useEffect(() => {
     const role = localStorage.getItem("macroMealsRole");
 
@@ -77,10 +61,11 @@ export default function StaffOrdersPage() {
     }
 
     setAuthorized(true);
+
     fetchOrders();
 
     const channel = supabase
-      .channel("staff-orders-realtime")
+      .channel("staff-orders")
       .on(
         "postgres_changes",
         {
@@ -94,50 +79,24 @@ export default function StaffOrdersPage() {
       )
       .subscribe();
 
-    const autoRefresh = setInterval(() => {
-      fetchOrders();
-    }, 10000);
-
     return () => {
       supabase.removeChannel(channel);
-      clearInterval(autoRefresh);
     };
   }, []);
 
-  /* =========================
-     UPDATE STATUS
-  ========================= */
-
   async function updateStatus(orderId: string, newStatus: string) {
-    setUpdatingOrderId(orderId);
-
-    setOrders((currentOrders) =>
-      currentOrders.map((order) =>
-        order.id === orderId ? { ...order, status: newStatus } : order
-      )
-    );
-
     const { error } = await supabase
       .from("orders")
       .update({ status: newStatus })
-      .eq("id", orderId)
-      .select();
+      .eq("id", orderId);
 
     if (error) {
       console.error(error);
-      alert("Failed to update order status.");
-      setUpdatingOrderId(null);
-      fetchOrders();
       return;
     }
 
-    await fetchOrders();
-    setUpdatingOrderId(null);
+    fetchOrders();
   }
-
-  /* =========================
-     WHATSAPP READY MESSAGE
-  ========================= */
 
   function sendReadyMessage(order: Order) {
     const cleanPhone = order.whatsapp.replace(/\D/g, "");
@@ -157,32 +116,19 @@ Thank you for ordering with Macro Meals On Wheels.`;
     );
   }
 
-  /* =========================
-     LOGOUT
-  ========================= */
-
   function logout() {
     localStorage.removeItem("macroMealsRole");
-    localStorage.removeItem("macroMealsAdmin");
     window.location.href = "/admin/login";
   }
-
-  /* =========================
-     FILTER + STATS
-  ========================= */
 
   const filteredOrders =
     activeFilter === "All"
       ? orders
       : orders.filter((order) => order.status === activeFilter);
 
-  const pendingCount = orders.filter((order) => order.status === "Pending").length;
-  const preparingCount = orders.filter((order) => order.status === "Preparing").length;
-  const readyCount = orders.filter((order) => order.status === "Ready for Pickup").length;
-  const completedCount = orders.filter((order) => order.status === "Completed").length;
-
   function getFilterCount(filter: string) {
     if (filter === "All") return orders.length;
+
     return orders.filter((order) => order.status === filter).length;
   }
 
@@ -190,16 +136,11 @@ Thank you for ordering with Macro Meals On Wheels.`;
     return null;
   }
 
-  /* =========================
-     UI
-  ========================= */
-
   return (
     <main className="min-h-screen bg-[#f3f3f3] px-4 py-8">
       <div className="mx-auto max-w-7xl">
-        {/* =========================
-           HEADER
-        ========================= */}
+
+        {/* HEADER */}
 
         <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-xl md:flex-row md:items-center md:justify-between">
           <div>
@@ -208,88 +149,19 @@ Thank you for ordering with Macro Meals On Wheels.`;
             </h1>
 
             <p className="mt-2 font-semibold text-gray-600">
-              Manage customer pickup orders without sales totals.
+              Kitchen and pickup management workflow.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <a
-              href="/menu"
-              className="rounded-2xl border-2 border-[#060d57] px-5 py-3 font-black text-[#060d57]"
-            >
-              View Menu
-            </a>
-
-            <button
-              onClick={fetchOrders}
-              className="rounded-2xl bg-[#060d57] px-5 py-3 font-black text-white"
-            >
-              Refresh
-            </button>
-
-            <button
-              onClick={logout}
-              className="rounded-2xl bg-red-500 px-5 py-3 font-black text-white"
-            >
-              Logout
-            </button>
-          </div>
+          <button
+            onClick={logout}
+            className="rounded-2xl bg-red-500 px-5 py-3 font-black text-white"
+          >
+            Logout
+          </button>
         </div>
 
-        {/* =========================
-           STATUS CARDS
-        ========================= */}
-
-        <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          <div className="rounded-3xl bg-white p-5 shadow-lg">
-            <p className="text-sm font-black uppercase text-[#75a62f]">
-              All Orders
-            </p>
-            <p className="mt-2 text-3xl font-black text-[#060d57]">
-              {orders.length}
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-5 shadow-lg">
-            <p className="text-sm font-black uppercase text-[#75a62f]">
-              Pending
-            </p>
-            <p className="mt-2 text-3xl font-black text-[#060d57]">
-              {pendingCount}
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-5 shadow-lg">
-            <p className="text-sm font-black uppercase text-[#75a62f]">
-              Preparing
-            </p>
-            <p className="mt-2 text-3xl font-black text-[#060d57]">
-              {preparingCount}
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-5 shadow-lg">
-            <p className="text-sm font-black uppercase text-[#75a62f]">
-              Ready
-            </p>
-            <p className="mt-2 text-3xl font-black text-[#060d57]">
-              {readyCount}
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-[#060d57] p-5 text-white shadow-lg">
-            <p className="text-sm font-black uppercase text-white/70">
-              Completed
-            </p>
-            <p className="mt-2 text-3xl font-black">
-              {completedCount}
-            </p>
-          </div>
-        </div>
-
-        {/* =========================
-           FILTER BUTTONS
-        ========================= */}
+        {/* FILTERS */}
 
         <div className="mb-8 rounded-3xl bg-white p-4 shadow-xl">
           <p className="mb-3 text-sm font-black uppercase tracking-wide text-[#060d57]">
@@ -313,9 +185,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
           </div>
         </div>
 
-        {/* =========================
-           LOADING / EMPTY
-        ========================= */}
+        {/* LOADING */}
 
         {loading && (
           <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
@@ -325,17 +195,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
           </div>
         )}
 
-        {!loading && filteredOrders.length === 0 && (
-          <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
-            <p className="text-xl font-black text-[#060d57]">
-              No orders found.
-            </p>
-          </div>
-        )}
-
-        {/* =========================
-           ORDERS LIST
-        ========================= */}
+        {/* ORDERS */}
 
         {!loading && filteredOrders.length > 0 && (
           <div className="grid gap-6">
@@ -347,7 +207,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
                   <div>
                     <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
-                      Order Status
+                      Status
                     </p>
 
                     <p className="text-2xl font-black text-[#060d57]">
@@ -356,11 +216,12 @@ Thank you for ordering with Macro Meals On Wheels.`;
                   </div>
 
                   <div className="rounded-2xl bg-[#f3f3f3] px-4 py-3 text-sm font-black text-[#060d57]">
-                    Ordered: {new Date(order.created_at).toLocaleString()}
+                    {new Date(order.created_at).toLocaleString()}
                   </div>
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-3">
+
                   {/* CUSTOMER */}
 
                   <div>
@@ -401,44 +262,70 @@ Thank you for ordering with Macro Meals On Wheels.`;
                     </p>
                   </div>
 
-                  {/* STATUS */}
+                  {/* ACTIONS */}
 
                   <div>
                     <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
-                      Update Status
+                      Actions
                     </p>
 
-                    <select
-                      value={order.status || "Pending"}
-                      disabled={updatingOrderId === order.id}
-                      onChange={(e) => updateStatus(order.id, e.target.value)}
-                      className="mt-2 w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 font-black text-[#060d57]"
-                    >
-                      {statuses.map((status) => (
-                        <option key={status} value={status}>
-                          {status}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="mt-3 flex flex-col gap-3">
 
-                    {updatingOrderId === order.id && (
-                      <p className="mt-2 text-sm font-bold text-[#75a62f]">
-                        Updating status...
-                      </p>
-                    )}
+                      {order.status === "Pending" && (
+                        <button
+                          onClick={() =>
+                            updateStatus(order.id, "Preparing")
+                          }
+                          className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
+                        >
+                          Start Preparing
+                        </button>
+                      )}
 
-                    {order.status === "Ready for Pickup" && (
+                      {order.status === "Preparing" && (
+                        <button
+                          onClick={() =>
+                            updateStatus(order.id, "Ready for Pickup")
+                          }
+                          className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
+                        >
+                          Mark Ready for Pickup
+                        </button>
+                      )}
+
+                      {order.status === "Ready for Pickup" && (
+                        <>
+                          <button
+                            onClick={() => sendReadyMessage(order)}
+                            className="rounded-2xl bg-[#25D366] px-5 py-4 font-black text-white"
+                          >
+                            Send Ready WhatsApp
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              updateStatus(order.id, "Pickup Complete")
+                            }
+                            className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
+                          >
+                            Pickup Complete
+                          </button>
+                        </>
+                      )}
+
                       <button
-                        onClick={() => sendReadyMessage(order)}
-                        className="mt-4 w-full rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
+                        onClick={() =>
+                          updateStatus(order.id, "Cancelled")
+                        }
+                        className="rounded-2xl bg-red-500 px-5 py-4 font-black text-white"
                       >
-                        Send Ready WhatsApp
+                        Cancel Order
                       </button>
-                    )}
+                    </div>
                   </div>
                 </div>
 
-                {/* ORDER ITEMS */}
+                {/* ITEMS */}
 
                 <div className="mt-6 rounded-2xl bg-[#f3f3f3] p-4">
                   <p className="mb-4 text-sm font-black uppercase tracking-wide text-[#060d57]">
@@ -448,7 +335,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
                   <div className="grid gap-3 md:grid-cols-2">
                     {order.items.map((item, index) => (
                       <div
-                        key={`${item.name}-${index}`}
+                        key={index}
                         className="rounded-2xl bg-white p-4"
                       >
                         <p className="text-sm font-black text-[#75a62f]">
