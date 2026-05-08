@@ -82,7 +82,29 @@ export default function Home() {
             <p className="mt-3 text-lg font-bold text-[#75a62f]">
               Healthy Meals Made Simple
             </p>
+            <div className="mx-auto mt-4 flex max-w-md flex-wrap items-center justify-center gap-3 rounded-2xl bg-[#f3f3f3] px-5 py-4 shadow-inner">
+  <div className="text-center">
+    <p className="text-xs font-black uppercase tracking-wide text-[#75a62f]">
+      Open Days
+    </p>
 
+    <p className="mt-1 text-sm font-black text-[#060d57]">
+      Tuesday - Friday
+    </p>
+  </div>
+
+  <div className="h-10 w-px bg-gray-300" />
+
+  <div className="text-center">
+    <p className="text-xs font-black uppercase tracking-wide text-[#75a62f]">
+      Hours
+    </p>
+
+    <p className="mt-1 text-sm font-black text-[#060d57]">
+      11:00 AM - 7:30 PM
+    </p>
+  </div>
+</div>
             <p className="mx-auto mt-3 max-w-md text-sm font-semibold leading-relaxed text-gray-700">
               Order fresh daily meals or request 7+ packed meals prepared ahead
               for pickup.
