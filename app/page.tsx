@@ -47,7 +47,7 @@ export default function Home() {
       <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] max-w-3xl flex-col justify-between">
         <div className="flex justify-end gap-2">
           <a
-            href="/admin/login"
+            href="/admin/staff"
             className="rounded-xl border-2 border-[#060d57] bg-white/85 px-4 py-2 text-xs font-black text-[#060d57] shadow-md transition hover:bg-[#060d57] hover:text-white"
           >
             Staff Login
@@ -108,7 +108,7 @@ export default function Home() {
 
         <footer className="border-t border-white/70 py-4 text-center">
           <p className="text-xs font-semibold text-gray-600">
-            Designed &Developed by{" "}
+            Designed & Developed by{" "}
             <a
               href="https://webgraphintegrated.com/"
               target="_blank"
