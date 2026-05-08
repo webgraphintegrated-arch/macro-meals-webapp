@@ -45,7 +45,7 @@ export default function Home() {
       )}
 
       <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] max-w-3xl flex-col justify-between">
-        <div className="flex justify-center gap-2">
+        <div className="flex justify-end gap-2">
           <a
             href="/admin/staff"
             className="rounded-xl border-2 border-[#060d57] bg-white/85 px-4 py-2 text-xs font-black text-[#060d57] shadow-md transition hover:bg-[#060d57] hover:text-white"
