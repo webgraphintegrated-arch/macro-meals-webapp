@@ -7,24 +7,33 @@ export default function Home() {
   const [showPopup, setShowPopup] = useState(true);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#eef7f1] px-6 py-8">
-      {/* Bubble Gradient Background */}
-      <div className="absolute left-[-120px] top-[-120px] h-96 w-96 rounded-full bg-[#75a62f]/25 blur-3xl" />
-      <div className="absolute right-[-120px] top-20 h-96 w-96 rounded-full bg-[#060d57]/20 blur-3xl" />
-      <div className="absolute bottom-[-140px] left-1/3 h-[500px] w-[500px] rounded-full bg-[#75a62f]/20 blur-3xl" />
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#dff4e4] via-[#eaf7ef] to-[#ccefd9] px-6 py-8">
+      {/* Soft bubble texture */}
+      <div className="absolute inset-0 opacity-60">
+        <div className="absolute left-[-60px] top-[-70px] h-80 w-80 rounded-full bg-white/40" />
+        <div className="absolute left-[12%] top-[18%] h-28 w-28 rounded-full bg-white/35" />
+        <div className="absolute right-[10%] top-[12%] h-44 w-44 rounded-full bg-[#75a62f]/20" />
+        <div className="absolute bottom-[12%] left-[8%] h-52 w-52 rounded-full bg-white/30" />
+        <div className="absolute bottom-[-90px] right-[-70px] h-96 w-96 rounded-full bg-[#75a62f]/25" />
+        <div className="absolute left-[40%] top-[8%] h-24 w-24 rounded-full bg-white/25" />
+      </div>
 
-      {/* Coming Soon Popup */}
+      {/* Wave lines */}
+      <div className="absolute bottom-0 left-0 h-56 w-full opacity-30">
+        <div className="h-full w-[140%] -translate-x-20 rounded-[50%] border-t border-white" />
+        <div className="-mt-48 h-full w-[140%] -translate-x-10 rounded-[50%] border-t border-white" />
+        <div className="-mt-48 h-full w-[140%] rounded-[50%] border-t border-white" />
+      </div>
+
       {showPopup && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-sm rounded-3xl bg-white p-5 shadow-2xl">
-          <div className="flex items-start justify-between gap-4">
+        <div className="fixed bottom-6 right-6 z-50 max-w-xs rounded-3xl bg-white/95 p-4 shadow-2xl backdrop-blur">
+          <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-black uppercase text-[#75a62f]">
-                New Features Coming Soon
+              <p className="text-xs font-black uppercase text-[#75a62f]">
+                Coming Soon
               </p>
-
-              <p className="mt-3 text-sm font-bold leading-relaxed text-gray-700">
-                Customer accounts, suggested meals based on fitness goals,
-                loyalty rewards, saved meal plans and more are on the way.
+              <p className="mt-2 text-sm font-bold text-gray-700">
+                Customer accounts and goal-based meal suggestions.
               </p>
             </div>
 
@@ -38,12 +47,11 @@ export default function Home() {
         </div>
       )}
 
-      <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl flex-col justify-between">
-        {/* Top Login Buttons */}
+      <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-4xl flex-col justify-between">
         <div className="flex justify-end gap-3">
           <a
             href="/admin/login"
-            className="rounded-2xl border-2 border-[#060d57] bg-white/80 px-5 py-3 text-sm font-black text-[#060d57] shadow-lg backdrop-blur transition hover:bg-[#060d57] hover:text-white"
+            className="rounded-2xl border-2 border-[#060d57] bg-white/85 px-5 py-3 text-sm font-black text-[#060d57] shadow-lg backdrop-blur transition hover:bg-[#060d57] hover:text-white"
           >
             Staff Login
           </a>
@@ -56,77 +64,56 @@ export default function Home() {
           </a>
         </div>
 
-        {/* Main Card */}
-        <section className="flex flex-1 items-center justify-center py-10">
-          <div className="w-full rounded-[3rem] bg-white/85 p-10 text-center shadow-2xl backdrop-blur">
-            {/* Logo */}
+        <section className="flex flex-1 items-center justify-center py-8">
+          <div className="w-full max-w-3xl rounded-[2rem] bg-white/88 p-7 text-center shadow-2xl backdrop-blur md:p-10">
             <Image
               src="/logo.png"
               alt="Macro Meals On Wheels"
-              width={220}
-              height={220}
-              className="mx-auto mb-6"
+              width={150}
+              height={150}
+              className="mx-auto mb-5"
             />
 
-            {/* Heading */}
-            <h1 className="text-6xl font-black leading-none text-[#060d57] md:text-8xl">
+            <h1 className="text-5xl font-black leading-none text-[#060d57] md:text-7xl">
               FUEL YOUR
               <br />
               BODY
             </h1>
 
-            {/* Subheading */}
-            <p className="mt-6 text-2xl font-bold text-[#75a62f]">
+            <p className="mt-5 text-xl font-bold text-[#75a62f]">
               Healthy Meals Made Simple
             </p>
 
-            {/* Description */}
-            <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-relaxed text-gray-700">
-              Order fresh daily meals or request weekly packed meals with 7 or
-              more meals prepared ahead for pickup.
+            <p className="mx-auto mt-4 max-w-xl text-sm font-semibold leading-relaxed text-gray-700 md:text-base">
+              Order fresh daily meals or request 7+ packed meals prepared ahead
+              for pickup.
             </p>
 
-            {/* Cards */}
-            <div className="mt-10 grid gap-5 md:grid-cols-2">
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
               <a
                 href="/menu"
-                className="rounded-3xl bg-[#f3f3f3] p-8 shadow-lg transition hover:scale-[1.02]"
+                className="rounded-3xl bg-[#75a62f] p-6 text-white shadow-lg transition hover:scale-[1.02]"
               >
-                <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
+                <p className="text-sm font-black uppercase text-white/80">
                   Daily Ordering
                 </p>
-
-                <p className="mt-3 text-4xl font-black text-[#060d57]">
-                  Order Now
-                </p>
-
-                <p className="mt-3 text-sm font-semibold text-gray-600">
-                  Browse the full menu and place your order instantly.
-                </p>
+                <p className="mt-2 text-3xl font-black">Order Now</p>
               </a>
 
               <a
                 href="/request-packed-meals"
-                className="rounded-3xl bg-[#060d57] p-8 text-white shadow-lg transition hover:scale-[1.02]"
+                className="rounded-3xl bg-[#060d57] p-6 text-white shadow-lg transition hover:scale-[1.02]"
               >
-                <p className="text-sm font-black uppercase tracking-wide text-white/70">
+                <p className="text-sm font-black uppercase text-white/70">
                   Weekly Meal Prep
                 </p>
-
-                <p className="mt-3 text-4xl font-black">
-                  Packed Meals
-                </p>
-
-                <p className="mt-3 text-sm font-semibold text-white/80">
-                  Request 7+ meals in advance and save on weekly prep.
-                </p>
+                <p className="mt-2 text-3xl font-black">Packed Meals</p>
               </a>
             </div>
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="border-t border-white/60 py-6 text-center">
+        <footer className="border-t border-white/70 py-5 text-center">
           <p className="text-sm font-semibold text-gray-600">
             Developed by{" "}
             <a
