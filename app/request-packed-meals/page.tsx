@@ -3,10 +3,6 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-/* =========================
-   MENU DATA
-========================= */
-
 const menuCategories = [
   {
     title: "Burgers",
@@ -260,7 +256,7 @@ export default function PackedMealRequestPage() {
   async function submitRequest() {
     if (!fullName || !whatsapp || !email || !requestedStartDate) {
       alert(
-        "Please fill in your name, WhatsApp number, email address and requested start date."
+        "Please fill in your name, WhatsApp number, email address and requested meal start date."
       );
       return;
     }
@@ -332,7 +328,7 @@ Customer: ${fullName}
 WhatsApp: ${fullWhatsapp}
 Email: ${email}
 
-Requested Start Date: ${requestedStartDate}
+Requested Meal Start Date: ${requestedStartDate}
 Total Meals: ${totalMeals}
 
 Selected Meals:
@@ -368,7 +364,6 @@ Packed meal requests must be submitted at least 2 days in advance.
   return (
     <main className="min-h-screen bg-[#f3f3f3] px-4 py-8 pb-28">
       <div className="mx-auto max-w-7xl">
-        {/* HEADER */}
         <div className="mb-8 rounded-3xl bg-white p-6 text-center shadow-xl">
           <img
             src="/logo.png"
@@ -390,7 +385,6 @@ Packed meal requests must be submitted at least 2 days in advance.
           </p>
         </div>
 
-        {/* INFO */}
         <div className="mb-8 grid gap-4 md:grid-cols-3">
           <div className="rounded-3xl bg-white p-6 shadow-xl">
             <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
@@ -415,7 +409,7 @@ Packed meal requests must be submitted at least 2 days in advance.
 
             <p className="mt-2 font-semibold text-white/80">
               Requests must be submitted at least 2 days before the requested
-              start date.
+              meal start date.
             </p>
           </div>
 
@@ -436,7 +430,6 @@ Packed meal requests must be submitted at least 2 days in advance.
         </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* CUSTOMER DETAILS */}
           <section className="rounded-3xl bg-white p-6 shadow-xl">
             <h2 className="mb-6 text-3xl font-black text-[#060d57]">
               Customer Details
@@ -504,7 +497,7 @@ Packed meal requests must be submitted at least 2 days in advance.
 
               <div>
                 <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Requested Start Date *
+                  Requested Meal Start Date *
                 </label>
 
                 <input
@@ -515,7 +508,8 @@ Packed meal requests must be submitted at least 2 days in advance.
                 />
 
                 <p className="mt-2 text-sm font-semibold text-gray-600">
-                  Must be at least 2 days from today.
+                  Select the date you would like your packed meals to begin.
+                  Requests must be submitted at least 2 days in advance.
                 </p>
               </div>
 
@@ -602,7 +596,6 @@ Packed meal requests must be submitted at least 2 days in advance.
             </div>
           </section>
 
-          {/* MEAL SELECTOR */}
           <section className="rounded-3xl bg-white p-6 shadow-xl lg:col-span-1">
             <h2 className="mb-4 text-3xl font-black text-[#060d57]">
               Select Meals
@@ -663,7 +656,6 @@ Packed meal requests must be submitted at least 2 days in advance.
             </div>
           </section>
 
-          {/* SUMMARY */}
           <section className="rounded-3xl bg-white p-6 shadow-xl">
             <h2 className="mb-6 text-3xl font-black text-[#060d57]">
               Request Summary
