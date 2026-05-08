@@ -121,7 +121,11 @@ export default function AdminOrdersPage() {
       return;
     }
 
-    fetchOrders();
+    setOrders((currentOrders) =>
+      currentOrders.map((order) =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      )
+    );
   }
 
   /* =========================
@@ -296,14 +300,16 @@ Thank you for ordering with Macro Meals On Wheels.`;
                     </p>
 
                     <select
-                      value={order.status}
+                      value={order.status || "Pending"}
                       onChange={(e) =>
                         updateStatus(order.id, e.target.value)
                       }
                       className="mt-2 w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 font-black text-[#060d57]"
                     >
                       {statuses.map((status) => (
-                        <option key={status}>{status}</option>
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
                       ))}
                     </select>
 
