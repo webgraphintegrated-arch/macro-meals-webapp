@@ -259,7 +259,27 @@ export default function MenuPage() {
           <h1 className="text-5xl font-black text-[#060d57] md:text-6xl">
             OUR MENU
           </h1>
+            <div className="mx-auto mt-5 flex max-w-md flex-wrap items-center justify-center gap-3 rounded-2xl bg-[#f3f3f3] px-5 py-4 shadow-inner">
+  <div className="text-center">
+    <p className="text-xs font-black uppercase tracking-wide text-[#75a62f]">
+      Open Days
+    </p>
+    <p className="mt-1 text-sm font-black text-[#060d57]">
+      Tuesday - Friday
+    </p>
+  </div>
 
+  <div className="h-10 w-px bg-gray-300" />
+
+  <div className="text-center">
+    <p className="text-xs font-black uppercase tracking-wide text-[#75a62f]">
+      Hours
+    </p>
+    <p className="mt-1 text-sm font-black text-[#060d57]">
+      11:00 AM - 7:30 PM
+    </p>
+  </div>
+</div>
           <p className="mt-3 text-lg font-bold text-[#75a62f]">
             Choose your meal. Pick your protein. Fuel your goals.
           </p>
