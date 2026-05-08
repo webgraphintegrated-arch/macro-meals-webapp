@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 type OrderItem = {
@@ -59,6 +59,9 @@ export default function OwnerOrdersPage() {
   const [authorized, setAuthorized] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showNewOrderBanner, setShowNewOrderBanner] = useState(false);
+
+  const soundRef = useRef<HTMLAudioElement | null>(null);
 
   async function fetchOrders() {
     const { data, error } = await supabase
@@ -84,18 +87,34 @@ export default function OwnerOrdersPage() {
     }
 
     setAuthorized(true);
+
+    soundRef.current = new Audio("/sounds/new-order.mp3");
+
     fetchOrders();
 
     const channel = supabase
-      .channel("owner-orders")
+      .channel("owner-live-orders")
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
           schema: "public",
           table: "orders",
         },
-        () => fetchOrders()
+        () => {
+          fetchOrders();
+
+          if (soundRef.current) {
+            soundRef.current.currentTime = 0;
+            soundRef.current.play().catch(() => {});
+          }
+
+          setShowNewOrderBanner(true);
+
+          setTimeout(() => {
+            setShowNewOrderBanner(false);
+          }, 6000);
+        }
       )
       .subscribe();
 
@@ -185,6 +204,26 @@ Thank you for ordering with Macro Meals On Wheels.`;
   return (
     <main className="min-h-screen bg-[#f3f3f3] px-4 py-8">
       <div className="mx-auto max-w-7xl">
+        {showNewOrderBanner && (
+          <div className="mb-6 animate-pulse rounded-3xl border-4 border-[#75a62f] bg-white p-5 shadow-2xl">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
+                  New Order Alert
+                </p>
+
+                <h2 className="mt-1 text-2xl font-black text-[#060d57]">
+                  A new Macro Meals order was received.
+                </h2>
+              </div>
+
+              <div className="rounded-2xl bg-[#75a62f] px-5 py-3 text-lg font-black text-white">
+                NEW
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-xl md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-4xl font-black text-[#060d57]">

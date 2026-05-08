@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 type OrderItem = {
@@ -55,6 +55,9 @@ export default function StaffOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
+  const [showNewOrderBanner, setShowNewOrderBanner] = useState(false);
+
+  const soundRef = useRef<HTMLAudioElement | null>(null);
 
   async function fetchOrders() {
     const { data, error } = await supabase
@@ -80,18 +83,34 @@ export default function StaffOrdersPage() {
     }
 
     setAuthorized(true);
+
+    soundRef.current = new Audio("/sounds/new-order.mp3");
+
     fetchOrders();
 
     const channel = supabase
-      .channel("staff-orders")
+      .channel("staff-live-orders")
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
           schema: "public",
           table: "orders",
         },
-        () => fetchOrders()
+        () => {
+          fetchOrders();
+
+          if (soundRef.current) {
+            soundRef.current.currentTime = 0;
+            soundRef.current.play().catch(() => {});
+          }
+
+          setShowNewOrderBanner(true);
+
+          setTimeout(() => {
+            setShowNewOrderBanner(false);
+          }, 6000);
+        }
       )
       .subscribe();
 
@@ -165,6 +184,26 @@ Thank you for ordering with Macro Meals On Wheels.`;
   return (
     <main className="min-h-screen bg-[#f3f3f3] px-4 py-8">
       <div className="mx-auto max-w-7xl">
+        {showNewOrderBanner && (
+          <div className="mb-6 animate-pulse rounded-3xl border-4 border-[#75a62f] bg-white p-5 shadow-2xl">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
+                  New Order Alert
+                </p>
+
+                <h2 className="mt-1 text-2xl font-black text-[#060d57]">
+                  A new Macro Meals order was received.
+                </h2>
+              </div>
+
+              <div className="rounded-2xl bg-[#75a62f] px-5 py-3 text-lg font-black text-white">
+                NEW
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-xl md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-4xl font-black text-[#060d57]">
@@ -200,17 +239,21 @@ Thank you for ordering with Macro Meals On Wheels.`;
           </div>
         </div>
 
-        <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-6">
           {topStatusCards.map((status) => (
             <div
               key={status}
               className={`rounded-3xl p-5 shadow-lg ${
-                status === "Pickup Complete" ? "bg-[#060d57] text-white" : "bg-white"
+                status === "Pickup Complete"
+                  ? "bg-[#060d57] text-white"
+                  : "bg-white"
               }`}
             >
               <p
                 className={`text-sm font-black uppercase ${
-                  status === "Pickup Complete" ? "text-white/70" : "text-[#75a62f]"
+                  status === "Pickup Complete"
+                    ? "text-white/70"
+                    : "text-[#75a62f]"
                 }`}
               >
                 {status}
@@ -218,7 +261,9 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
               <p
                 className={`mt-2 text-3xl font-black ${
-                  status === "Pickup Complete" ? "text-white" : "text-[#060d57]"
+                  status === "Pickup Complete"
+                    ? "text-white"
+                    : "text-[#060d57]"
                 }`}
               >
                 {getCount(status)}
@@ -251,20 +296,27 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
         {loading && (
           <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
-            <p className="text-xl font-black text-[#060d57]">Loading orders...</p>
+            <p className="text-xl font-black text-[#060d57]">
+              Loading orders...
+            </p>
           </div>
         )}
 
         {!loading && filteredOrders.length === 0 && (
           <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
-            <p className="text-xl font-black text-[#060d57]">No orders found.</p>
+            <p className="text-xl font-black text-[#060d57]">
+              No orders found.
+            </p>
           </div>
         )}
 
         {!loading && filteredOrders.length > 0 && (
           <div className="grid gap-6">
             {filteredOrders.map((order) => (
-              <section key={order.id} className="rounded-3xl bg-white p-6 shadow-xl">
+              <section
+                key={order.id}
+                className="rounded-3xl bg-white p-6 shadow-xl"
+              >
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
                   <div>
                     <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
@@ -326,7 +378,9 @@ Thank you for ordering with Macro Meals On Wheels.`;
                     <div className="mt-3 flex flex-col gap-3">
                       <select
                         value={order.status || "Pending"}
-                        onChange={(e) => updateStatus(order.id, e.target.value)}
+                        onChange={(e) =>
+                          updateStatus(order.id, e.target.value)
+                        }
                         className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 font-black text-[#060d57]"
                       >
                         {statuses.map((status) => (
@@ -347,7 +401,9 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
                       {order.status === "Preparing" && (
                         <button
-                          onClick={() => updateStatus(order.id, "Ready for Pickup")}
+                          onClick={() =>
+                            updateStatus(order.id, "Ready for Pickup")
+                          }
                           className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
                         >
                           Mark Ready for Pickup
@@ -365,7 +421,9 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
                       {order.status === "Ready Message Sent" && (
                         <button
-                          onClick={() => updateStatus(order.id, "Pickup Complete")}
+                          onClick={() =>
+                            updateStatus(order.id, "Pickup Complete")
+                          }
                           className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
                         >
                           Pickup Complete
@@ -375,7 +433,9 @@ Thank you for ordering with Macro Meals On Wheels.`;
                       {order.status !== "Cancelled" &&
                         order.status !== "Pickup Complete" && (
                           <button
-                            onClick={() => updateStatus(order.id, "Cancelled")}
+                            onClick={() =>
+                              updateStatus(order.id, "Cancelled")
+                            }
                             className="rounded-2xl bg-red-500 px-5 py-4 font-black text-white"
                           >
                             Cancel Order
@@ -392,7 +452,10 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
                   <div className="grid gap-3 md:grid-cols-2">
                     {order.items.map((item, index) => (
-                      <div key={`${item.name}-${index}`} className="rounded-2xl bg-white p-4">
+                      <div
+                        key={`${item.name}-${index}`}
+                        className="rounded-2xl bg-white p-4"
+                      >
                         <p className="text-sm font-black text-[#75a62f]">
                           {item.category}
                         </p>
