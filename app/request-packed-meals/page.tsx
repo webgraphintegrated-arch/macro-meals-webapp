@@ -256,7 +256,7 @@ export default function PackedMealRequestPage() {
   async function submitRequest() {
     if (!fullName || !whatsapp || !email || !requestedStartDate) {
       alert(
-        "Please fill in your name, WhatsApp number, email address and requested meal start date."
+        "Please fill in your name, WhatsApp number, email address and your requested pickup date."
       );
       return;
     }
@@ -328,7 +328,7 @@ Customer: ${fullName}
 WhatsApp: ${fullWhatsapp}
 Email: ${email}
 
-Requested Meal Start Date: ${requestedStartDate}
+Requested Pickup Date: ${requestedStartDate}
 Total Meals: ${totalMeals}
 
 Selected Meals:
@@ -497,7 +497,7 @@ Packed meal requests must be submitted at least 2 days in advance.
 
               <div>
                 <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Requested Meal Start Date *
+                  Requested Pickup Date *
                 </label>
 
                 <input
