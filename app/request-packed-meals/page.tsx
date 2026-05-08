@@ -6,138 +6,160 @@ import { supabase } from "@/lib/supabase";
 const menuCategories = [
   {
     title: "Burgers",
+    description:
+      "100% homemade burgers sautéed with onion, mushrooms, lettuce, tomato, ketchup, mustard and mayo. Choice of wheat, white bread or tortilla.",
     items: [
-      { name: "Ground Beef", price: 20, description: "Ground beef burger option." },
-      { name: "Ground Chicken", price: 15, description: "Lean ground chicken burger option." },
-      { name: "Chicken Breast", price: 15, description: "Chicken breast burger option." },
-      { name: "Fish", price: 20, description: "Fish burger option." },
-      { name: "Shrimp", price: 25, description: "Shrimp burger option." },
-      { name: "Salmon", price: 28, description: "Salmon burger option." },
+      { name: "Ground Beef", price: 20 },
+      { name: "Ground Chicken", price: 15 },
+      { name: "Chicken Breast", price: 15 },
+      { name: "Fish", price: 20 },
+      { name: "Shrimp", price: 25 },
+      { name: "Salmon", price: 28 },
     ],
   },
   {
     title: "Wraps",
+    description:
+      "Flour/wheat tortilla filled with protein, salad, mushroom, salsa, cheese and sour cream.",
     items: [
-      { name: "Ground Beef", price: 24, description: "Ground beef wrap with fresh fillings." },
-      { name: "Ground Chicken", price: 19, description: "Ground chicken wrap with fresh fillings." },
-      { name: "Chicken", price: 19, description: "Chicken wrap with fresh fillings." },
-      { name: "Fish", price: 25, description: "Fish wrap with fresh fillings." },
-      { name: "Shrimp", price: 35, description: "Shrimp wrap with fresh fillings." },
-      { name: "Salmon", price: 30, description: "Salmon wrap with fresh fillings." },
-      { name: "Steak", price: 32, description: "Steak wrap with fresh fillings." },
+      { name: "Ground Beef", price: 24 },
+      { name: "Ground Chicken", price: 19 },
+      { name: "Chicken", price: 19 },
+      { name: "Fish", price: 25 },
+      { name: "Shrimp", price: 35 },
+      { name: "Salmon", price: 30 },
+      { name: "Steak", price: 32 },
     ],
   },
   {
     title: "Veggie Wrap",
-    items: [
-      { name: "Veggie", price: 15, description: "Veggie wrap with fresh vegetables." },
-    ],
+    description:
+      "Flour/wheat tortilla filled with fresh vegetables, salad, mushroom, salsa, cheese and sour cream.",
+    items: [{ name: "Veggie", price: 15 }],
   },
   {
     title: "Salads",
+    description:
+      "Fresh salad bowl served with your choice of protein and balanced toppings.",
     items: [
-      { name: "Ground Beef", price: 35, description: "Ground beef salad meal." },
-      { name: "Ground Chicken", price: 30, description: "Ground chicken salad meal." },
-      { name: "Chicken", price: 30, description: "Chicken salad meal." },
-      { name: "Fish", price: 35, description: "Fish salad meal." },
-      { name: "Shrimp", price: 50, description: "Shrimp salad meal." },
-      { name: "Salmon", price: 45, description: "Salmon salad meal." },
-      { name: "Steak", price: 45, description: "Steak salad meal." },
+      { name: "Ground Beef", price: 35 },
+      { name: "Ground Chicken", price: 30 },
+      { name: "Chicken", price: 30 },
+      { name: "Fish", price: 35 },
+      { name: "Shrimp", price: 50 },
+      { name: "Salmon", price: 45 },
+      { name: "Steak", price: 45 },
     ],
   },
   {
     title: "Bowl",
+    description:
+      "Balanced bowl meal served with your choice of protein and meal base.",
     items: [
-      { name: "Ground Beef", price: 40, description: "Ground beef bowl meal." },
-      { name: "Ground Chicken", price: 35, description: "Ground chicken bowl meal." },
-      { name: "Chicken", price: 35, description: "Chicken bowl meal." },
-      { name: "Fish", price: 40, description: "Fish bowl meal." },
-      { name: "Shrimp", price: 55, description: "Shrimp bowl meal." },
-      { name: "Salmon", price: 50, description: "Salmon bowl meal." },
-      { name: "Steak", price: 50, description: "Steak bowl meal." },
+      { name: "Ground Beef", price: 40 },
+      { name: "Ground Chicken", price: 35 },
+      { name: "Chicken", price: 35 },
+      { name: "Fish", price: 40 },
+      { name: "Shrimp", price: 55 },
+      { name: "Salmon", price: 50 },
+      { name: "Steak", price: 50 },
     ],
   },
   {
     title: "Sweet Potato Meals",
+    description:
+      "Sweet potato meal served with your selected protein for a balanced packed meal option.",
     items: [
-      { name: "Chicken", price: 32, description: "Chicken meal with sweet potato." },
-      { name: "Fish", price: 40, description: "Fish meal with sweet potato." },
-      { name: "Shrimp", price: 45, description: "Shrimp meal with sweet potato." },
-      { name: "Salmon", price: 50, description: "Salmon meal with sweet potato." },
-      { name: "Steak", price: 50, description: "Steak meal with sweet potato." },
+      { name: "Chicken", price: 32 },
+      { name: "Fish", price: 40 },
+      { name: "Shrimp", price: 45 },
+      { name: "Salmon", price: 50 },
+      { name: "Steak", price: 50 },
     ],
   },
   {
     title: "Stuffed Potato Meals",
+    description:
+      "Stuffed potato packed with your selected protein or veggie option.",
     items: [
-      { name: "Veggie", price: 20, description: "Stuffed potato with veggie filling." },
-      { name: "Chicken", price: 30, description: "Stuffed potato with chicken." },
-      { name: "Fish", price: 35, description: "Stuffed potato with fish." },
-      { name: "Shrimp", price: 35, description: "Stuffed potato with shrimp." },
-      { name: "Salmon", price: 40, description: "Stuffed potato with salmon." },
-      { name: "Steak", price: 40, description: "Stuffed potato with steak." },
+      { name: "Veggie", price: 20 },
+      { name: "Chicken", price: 30 },
+      { name: "Fish", price: 35 },
+      { name: "Shrimp", price: 35 },
+      { name: "Salmon", price: 40 },
+      { name: "Steak", price: 40 },
     ],
   },
   {
     title: "Veggie Rice Meals",
+    description:
+      "Veggie rice meal served with your choice of protein or veggie option.",
     items: [
-      { name: "Veggie", price: 17, description: "Veggie rice meal." },
-      { name: "Chicken", price: 25, description: "Chicken veggie rice meal." },
-      { name: "Fish", price: 30, description: "Fish veggie rice meal." },
-      { name: "Shrimp", price: 40, description: "Shrimp veggie rice meal." },
-      { name: "Salmon", price: 40, description: "Salmon veggie rice meal." },
-      { name: "Steak", price: 40, description: "Steak veggie rice meal." },
-      { name: "Ground Beef", price: 30, description: "Ground beef veggie rice meal." },
-      { name: "Ground Chicken", price: 25, description: "Ground chicken veggie rice meal." },
+      { name: "Veggie", price: 17 },
+      { name: "Chicken", price: 25 },
+      { name: "Fish", price: 30 },
+      { name: "Shrimp", price: 40 },
+      { name: "Salmon", price: 40 },
+      { name: "Steak", price: 40 },
+      { name: "Ground Beef", price: 30 },
+      { name: "Ground Chicken", price: 25 },
     ],
   },
   {
     title: "Sweet Potato Fries Meals",
+    description:
+      "Sweet potato fries meal served with your selected protein or veggie option.",
     items: [
-      { name: "Veggie", price: 25, description: "Veggie meal with sweet potato fries." },
-      { name: "Chicken", price: 32, description: "Chicken meal with sweet potato fries." },
-      { name: "Fish", price: 40, description: "Fish meal with sweet potato fries." },
-      { name: "Shrimp", price: 50, description: "Shrimp meal with sweet potato fries." },
-      { name: "Salmon", price: 50, description: "Salmon meal with sweet potato fries." },
-      { name: "Steak", price: 50, description: "Steak meal with sweet potato fries." },
+      { name: "Veggie", price: 25 },
+      { name: "Chicken", price: 32 },
+      { name: "Fish", price: 40 },
+      { name: "Shrimp", price: 50 },
+      { name: "Salmon", price: 50 },
+      { name: "Steak", price: 50 },
     ],
   },
   {
     title: "Dieter’s Olive Oil Pasta",
+    description:
+      "Olive oil pasta made for a lighter meal option with your choice of protein or veggie.",
     items: [
-      { name: "Veggie", price: 20, description: "Olive oil pasta with veggie option." },
-      { name: "Chicken", price: 25, description: "Olive oil pasta with chicken." },
-      { name: "Fish", price: 35, description: "Olive oil pasta with fish." },
-      { name: "Shrimp", price: 35, description: "Olive oil pasta with shrimp." },
-      { name: "Salmon", price: 40, description: "Olive oil pasta with salmon." },
-      { name: "Steak", price: 40, description: "Olive oil pasta with steak." },
-      { name: "Ground Beef", price: 30, description: "Olive oil pasta with ground beef." },
-      { name: "Ground Chicken", price: 25, description: "Olive oil pasta with ground chicken." },
+      { name: "Veggie", price: 20 },
+      { name: "Chicken", price: 25 },
+      { name: "Fish", price: 35 },
+      { name: "Shrimp", price: 35 },
+      { name: "Salmon", price: 40 },
+      { name: "Steak", price: 40 },
+      { name: "Ground Beef", price: 30 },
+      { name: "Ground Chicken", price: 25 },
     ],
   },
   {
     title: "Gainer’s Cream Pasta",
+    description:
+      "Cream pasta made for a heavier meal option with your choice of protein or veggie.",
     items: [
-      { name: "Veggie", price: 25, description: "Cream pasta with veggie option." },
-      { name: "Chicken", price: 35, description: "Cream pasta with chicken." },
-      { name: "Fish", price: 40, description: "Cream pasta with fish." },
-      { name: "Shrimp", price: 45, description: "Cream pasta with shrimp." },
-      { name: "Salmon", price: 45, description: "Cream pasta with salmon." },
-      { name: "Steak", price: 50, description: "Cream pasta with steak." },
-      { name: "Ground Beef", price: 40, description: "Cream pasta with ground beef." },
-      { name: "Ground Chicken", price: 35, description: "Cream pasta with ground chicken." },
+      { name: "Veggie", price: 25 },
+      { name: "Chicken", price: 35 },
+      { name: "Fish", price: 40 },
+      { name: "Shrimp", price: 45 },
+      { name: "Salmon", price: 45 },
+      { name: "Steak", price: 50 },
+      { name: "Ground Beef", price: 40 },
+      { name: "Ground Chicken", price: 35 },
     ],
   },
   {
     title: "Quesadilla",
+    description:
+      "Quesadilla filled with your selected protein, cheese and savory fillings.",
     items: [
-      { name: "Ground Beef", price: 30, description: "Quesadilla with ground beef." },
-      { name: "Ground Chicken", price: 27, description: "Quesadilla with ground chicken." },
-      { name: "Chicken Breast", price: 27, description: "Quesadilla with chicken breast." },
-      { name: "Fish", price: 31, description: "Quesadilla with fish." },
-      { name: "Shrimp", price: 44, description: "Quesadilla with shrimp." },
-      { name: "Salmon", price: 38, description: "Quesadilla with salmon." },
-      { name: "Steak", price: 39, description: "Quesadilla with steak." },
+      { name: "Ground Beef", price: 30 },
+      { name: "Ground Chicken", price: 27 },
+      { name: "Chicken Breast", price: 27 },
+      { name: "Fish", price: 31 },
+      { name: "Shrimp", price: 44 },
+      { name: "Salmon", price: 38 },
+      { name: "Steak", price: 39 },
     ],
   },
 ];
@@ -177,7 +199,10 @@ export default function PackedMealRequestPage() {
 
   const activeCategory = menuCategories[activeCategoryIndex];
 
-  const totalMeals = selectedMeals.reduce((total, meal) => total + meal.quantity, 0);
+  const totalMeals = selectedMeals.reduce(
+    (total, meal) => total + meal.quantity,
+    0
+  );
 
   const subtotal = selectedMeals.reduce(
     (total, meal) => total + meal.price * meal.quantity,
@@ -529,7 +554,9 @@ Packed meal requests must be submitted at least 2 days in advance.
 
                   <button
                     type="button"
-                    onClick={() => setContainerOption("Providing Own Containers")}
+                    onClick={() =>
+                      setContainerOption("Providing Own Containers")
+                    }
                     className={`w-full rounded-2xl border-2 px-5 py-4 text-left font-black ${
                       containerOption === "Providing Own Containers"
                         ? "border-[#75a62f] bg-[#75a62f] text-white"
@@ -616,9 +643,13 @@ Packed meal requests must be submitted at least 2 days in advance.
             </div>
 
             <div className="rounded-3xl bg-[#f3f3f3] p-4">
-              <h3 className="mb-4 text-2xl font-black text-[#060d57]">
+              <h3 className="text-2xl font-black text-[#060d57]">
                 {activeCategory.title}
               </h3>
+
+              <p className="mt-2 mb-4 text-sm font-semibold leading-relaxed text-gray-600">
+                {activeCategory.description}
+              </p>
 
               <div className="space-y-3">
                 {activeCategory.items.map((item) => (
@@ -630,10 +661,6 @@ Packed meal requests must be submitted at least 2 days in advance.
                       <div>
                         <p className="text-lg font-black text-[#060d57]">
                           {item.name}
-                        </p>
-
-                        <p className="mt-1 text-sm font-semibold text-gray-600">
-                          {item.description}
                         </p>
 
                         <p className="mt-2 text-sm font-bold text-[#75a62f]">
