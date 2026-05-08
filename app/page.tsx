@@ -7,13 +7,20 @@ export default function Home() {
   const [showPopup, setShowPopup] = useState(true);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#dff4e4] via-[#eef9f1] to-[#ccefd9] px-5 py-6">
-      <div className="absolute inset-0 opacity-60">
-        <div className="absolute left-[-80px] top-[-80px] h-80 w-80 rounded-full bg-white/40" />
-        <div className="absolute right-[-80px] top-20 h-72 w-72 rounded-full bg-[#75a62f]/20" />
-        <div className="absolute bottom-[-100px] left-[20%] h-96 w-96 rounded-full bg-white/30" />
-        <div className="absolute bottom-[-90px] right-[-60px] h-80 w-80 rounded-full bg-[#060d57]/10" />
-      </div>
+    <main className="relative min-h-screen overflow-hidden px-5 py-6">
+  {/* Background Image */}
+  <div className="absolute inset-0">
+    <Image
+      src="/background.jpg"
+      alt="Background"
+      fill
+      priority
+      className="object-cover"
+    />
+
+    {/* Dark/soft overlay */}
+    <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px]" />
+  </div>
 
       {showPopup && (
         <div className="fixed bottom-5 right-5 z-50 max-w-xs rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur">
