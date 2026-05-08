@@ -56,6 +56,7 @@ export default function StaffOrdersPage() {
   const [authorized, setAuthorized] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
   const [showNewOrderBanner, setShowNewOrderBanner] = useState(false);
+  const [packedRequestCount, setPackedRequestCount] = useState(0);
 
   const soundRef = useRef<HTMLAudioElement | null>(null);
 
@@ -74,6 +75,20 @@ export default function StaffOrdersPage() {
     setLoading(false);
   }
 
+  async function fetchPackedRequestCount() {
+    const { data, error } = await supabase
+      .from("packed_meal_requests")
+      .select("id,status")
+      .eq("status", "New Request");
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setPackedRequestCount(data?.length || 0);
+  }
+
   useEffect(() => {
     const role = localStorage.getItem("macroMealsRole");
 
@@ -87,6 +102,7 @@ export default function StaffOrdersPage() {
     soundRef.current = new Audio("/sounds/new-order.mp3");
 
     fetchOrders();
+    fetchPackedRequestCount();
 
     const channel = supabase
       .channel("staff-live-orders")
@@ -114,12 +130,29 @@ export default function StaffOrdersPage() {
       )
       .subscribe();
 
+    const packedMealsChannel = supabase
+      .channel("staff-packed-meal-request-alerts")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "packed_meal_requests",
+        },
+        () => {
+          fetchPackedRequestCount();
+        }
+      )
+      .subscribe();
+
     const autoRefresh = setInterval(() => {
       fetchOrders();
+      fetchPackedRequestCount();
     }, 10000);
 
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(packedMealsChannel);
       clearInterval(autoRefresh);
     };
   }, []);
@@ -217,6 +250,18 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
           <div className="flex flex-wrap gap-3">
             <a
+              href="/admin/packed-meals"
+              className="relative rounded-2xl bg-red-500 px-5 py-3 font-black text-white"
+            >
+              🔔 Packed Meal Requests
+              {packedRequestCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-700 text-xs font-black text-white">
+                  {packedRequestCount}
+                </span>
+              )}
+            </a>
+
+            <a
               href="/menu"
               className="rounded-2xl border-2 border-[#060d57] px-5 py-3 font-black text-[#060d57]"
             >
@@ -224,7 +269,10 @@ Thank you for ordering with Macro Meals On Wheels.`;
             </a>
 
             <button
-              onClick={fetchOrders}
+              onClick={() => {
+                fetchOrders();
+                fetchPackedRequestCount();
+              }}
               className="rounded-2xl bg-[#060d57] px-5 py-3 font-black text-white"
             >
               Refresh
