@@ -28,21 +28,21 @@ export default function Home() {
         </p>
 
         {/* Buttons */}
-        <div className="mt-12 flex flex-col sm:flex-row gap-5 justify-center">
+        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
+  <a
+    href="/menu"
+    className="rounded-2xl bg-[#75a62f] px-8 py-4 text-center text-base font-black text-white shadow-lg transition hover:opacity-90"
+  >
+    Order Now
+  </a>
 
-          <Link href="/menu">
-            <button className="bg-[#060d57] text-white px-10 py-5 rounded-2xl font-bold text-xl hover:scale-105 transition">
-              ORDER NOW
-            </button>
-          </Link>
-
-          <Link href="/menu">
-            <button className="border-2 border-[#060d57] text-[#060d57] px-10 py-5 rounded-2xl font-bold text-xl hover:bg-[#060d57] hover:text-white transition">
-              VIEW MENU
-            </button>
-          </Link>
-
-        </div>
+  <a
+    href="/request-packed-meals"
+    className="rounded-2xl border-2 border-[#060d57] bg-white px-8 py-4 text-center text-base font-black text-[#060d57] shadow-lg transition hover:bg-[#060d57] hover:text-white"
+  >
+    Weekly Packed Meals
+  </a>
+</div>
 
       </div>
     </main>
