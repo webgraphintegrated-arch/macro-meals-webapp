@@ -78,10 +78,8 @@ export default function AdminOrdersPage() {
     }
 
     setAuthorized(true);
-
     fetchOrders();
 
-    /* REALTIME */
     const channel = supabase
       .channel("orders-realtime")
       .on(
@@ -97,7 +95,6 @@ export default function AdminOrdersPage() {
       )
       .subscribe();
 
-    /* AUTO REFRESH FALLBACK */
     const autoRefresh = setInterval(() => {
       fetchOrders();
     }, 10000);
@@ -128,6 +125,28 @@ export default function AdminOrdersPage() {
   }
 
   /* =========================
+     WHATSAPP READY MESSAGE
+  ========================= */
+
+  function sendReadyMessage(order: Order) {
+    const cleanPhone = order.whatsapp.replace(/\D/g, "");
+
+    const message = `Hi ${order.customer_name},
+
+Your Macro Meals order is ready for pickup at National Fitness Centre Campsite (Barrows Gym).
+
+Pickup Date: ${order.pickup_date}
+Pickup Time: ${order.pickup_time}
+
+Thank you for ordering with Macro Meals On Wheels.`;
+
+    window.open(
+      `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  }
+
+  /* =========================
      LOGOUT
   ========================= */
 
@@ -147,6 +166,7 @@ export default function AdminOrdersPage() {
   return (
     <main className="min-h-screen bg-[#f3f3f3] px-4 py-8">
       <div className="mx-auto max-w-7xl">
+
         {/* HEADER */}
 
         <div className="mb-8 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-xl md:flex-row md:items-center md:justify-between">
@@ -207,6 +227,7 @@ export default function AdminOrdersPage() {
                 className="rounded-3xl bg-white p-6 shadow-xl"
               >
                 <div className="grid gap-6 lg:grid-cols-3">
+
                   {/* CUSTOMER */}
 
                   <div>
@@ -295,6 +316,15 @@ export default function AdminOrdersPage() {
                         ${order.subtotal}
                       </p>
                     </div>
+
+                    {order.status === "Ready for Pickup" && (
+                      <button
+                        onClick={() => sendReadyMessage(order)}
+                        className="mt-4 w-full rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
+                      >
+                        Send Ready WhatsApp
+                      </button>
+                    )}
                   </div>
                 </div>
 
