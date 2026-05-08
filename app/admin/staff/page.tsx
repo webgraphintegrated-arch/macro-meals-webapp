@@ -200,7 +200,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
           </div>
         </div>
 
-        <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+        <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           {topStatusCards.map((status) => (
             <div
               key={status}

@@ -216,38 +216,47 @@ Thank you for ordering with Macro Meals On Wheels.`;
         </div>
 
         <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          {topStatusCards.map((status) => (
-            <div
-              key={status}
-              className={`rounded-3xl p-5 shadow-lg ${
-                status === "Pickup Complete" ? "bg-[#060d57] text-white" : "bg-white"
-              }`}
-            >
-              <p
-                className={`text-sm font-black uppercase ${
-                  status === "Pickup Complete" ? "text-white/70" : "text-[#75a62f]"
-                }`}
-              >
-                {status}
-              </p>
+  {topStatusCards.map((status) => (
+    <div
+      key={status}
+      className={`rounded-3xl p-5 shadow-lg ${
+        status === "Pickup Complete"
+          ? "bg-[#060d57] text-white"
+          : "bg-white"
+      }`}
+    >
+      <p
+        className={`text-sm font-black uppercase ${
+          status === "Pickup Complete"
+            ? "text-white/70"
+            : "text-[#75a62f]"
+        }`}
+      >
+        {status}
+      </p>
 
-              <p
-                className={`mt-2 text-3xl font-black ${
-                  status === "Pickup Complete" ? "text-white" : "text-[#060d57]"
-                }`}
-              >
-                {getCount(status)}
-              </p>
-            </div>
-          ))}
+      <p
+        className={`mt-2 text-3xl font-black ${
+          status === "Pickup Complete"
+            ? "text-white"
+            : "text-[#060d57]"
+        }`}
+      >
+        {getCount(status)}
+      </p>
+    </div>
+  ))}
 
-          <div className="rounded-3xl bg-[#060d57] p-5 text-white shadow-lg">
-            <p className="text-sm font-black uppercase text-white/70">
-              Total Sales
-            </p>
+  <div className="rounded-3xl bg-[#060d57] p-5 text-white shadow-lg">
+    <p className="text-sm font-black uppercase text-white/70">
+      Total Sales
+    </p>
 
-            <p className="mt-2 text-3xl font-black">${totalSales}</p>
-          </div>
+    <p className="mt-2 text-3xl font-black">
+      ${totalSales}
+    </p>
+  </div>
+</div>
         </div>
 
         <div className="mb-8 rounded-3xl bg-white p-4 shadow-xl">
