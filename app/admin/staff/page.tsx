@@ -93,7 +93,7 @@ export default function StaffOrdersPage() {
     const role = localStorage.getItem("macroMealsRole");
 
     if (role !== "staff" && role !== "owner") {
-      window.location.href = "/admin/login";
+      window.location.href = "/admin/staff";
       return;
     }
 
