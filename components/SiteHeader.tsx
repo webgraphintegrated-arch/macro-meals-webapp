@@ -1,17 +1,33 @@
-export default function SiteFooter() {
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+export default function SiteHeader() {
+  const pathname = usePathname();
+
+  // Hide header on homepage
+  if (pathname === "/") {
+    return null;
+  }
+
   return (
-    <footer className="relative z-40 border-t border-gray-200 bg-white/90 py-4 text-center backdrop-blur">
-      <p className="text-xs font-semibold text-gray-600">
-        Designed & Developed by{" "}
-        <a
-          href="https://webgraphintegrated.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-black text-[#060d57] hover:text-[#75a62f]"
-        >
-          Webgraph Integrated
-        </a>
-      </p>
-    </footer>
+    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-3">
+
+        <Link href="/">
+          <Image
+            src="/logo.png"
+            alt="Macro Meals On Wheels"
+            width={120}
+            height={120}
+            priority
+            className="h-auto w-auto object-contain"
+          />
+        </Link>
+
+      </div>
+    </header>
   );
 }
