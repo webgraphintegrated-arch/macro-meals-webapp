@@ -1,7 +1,10 @@
+"use client";
+
 import type { Metadata } from "next";
 import "./globals.css";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Macro Meals On Wheels",
@@ -11,6 +14,32 @@ export const metadata: Metadata = {
   },
 };
 
+function Header() {
+  const pathname = usePathname();
+
+  // Hide header logo on homepage
+  if (pathname === "/") {
+    return null;
+  }
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-3">
+        <Link href="/">
+          <Image
+            src="/logo.png"
+            alt="Macro Meals On Wheels"
+            width={120}
+            height={120}
+            priority
+            className="h-auto w-auto object-contain"
+          />
+        </Link>
+      </div>
+    </header>
+  );
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -19,27 +48,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-
-        {/* Top Header */}
-        <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
-          <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-3">
-
-            <Link href="/">
-              <Image
-                src="/logo.png"
-                alt="Macro Meals On Wheels"
-                width={130}
-                height={130}
-                priority
-                className="h-auto w-auto object-contain"
-              />
-            </Link>
-
-          </div>
-        </header>
-
+        <Header />
         {children}
-
       </body>
     </html>
   );
