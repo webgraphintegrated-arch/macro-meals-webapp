@@ -23,7 +23,7 @@ export default function Home() {
   </div>
 
       {showPopup && (
-        <div className="fixed bottom-5 right-5 z-50 max-w-xs rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur">
+        <div className="fixed bottom-20 right-5 z-50 max-w-xs rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-black uppercase text-[#75a62f]">
@@ -128,19 +128,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="border-t border-white/70 py-4 text-center">
-          <p className="text-xs font-semibold text-gray-600">
-            Designed & Developed by{" "}
-            <a
-              href="https://webgraphintegrated.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-black text-[#060d57] hover:text-[#75a62f]"
-            >
-              Webgraph Integrated
-            </a>
-          </p>
-        </footer>
+    
       </div>
     </main>
   );
