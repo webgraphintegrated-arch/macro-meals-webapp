@@ -4,10 +4,50 @@ import { useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 const fixedMeals = [
-  { id: 1, name: "6oz Chicken Veggie Rice Meal", price: 25 },
-  { id: 2, name: "6oz Chicken Sweet Potato Meal", price: 32 },
-  { id: 3, name: "6oz Chicken Pasta Meal", price: 25 },
-  { id: 4, name: "4oz Chicken Stuffed Potato Meal", price: 30 },
+  {
+    id: 1,
+    name: "6oz Chicken Veggie Rice Meal",
+    price: 25,
+    macros: {
+      calories: 357,
+      protein: 35,
+      carbs: 49,
+      fat: 5,
+    },
+  },
+  {
+    id: 2,
+    name: "6oz Chicken Sweet Potato Meal",
+    price: 32,
+    macros: {
+      calories: 420,
+      protein: 38,
+      carbs: 52,
+      fat: 6,
+    },
+  },
+  {
+    id: 3,
+    name: "6oz Chicken Pasta Meal",
+    price: 25,
+    macros: {
+      calories: 460,
+      protein: 35,
+      carbs: 58,
+      fat: 8,
+    },
+  },
+  {
+    id: 4,
+    name: "4oz Chicken Stuffed Potato Meal",
+    price: 30,
+    macros: {
+      calories: 390,
+      protein: 28,
+      carbs: 45,
+      fat: 7,
+    },
+  },
 ];
 
 const countryCodes = [
@@ -115,6 +155,7 @@ function MealBuilder({
       <h3 className="mb-4 text-xl font-bold text-slate-900">{label}</h3>
 
       <label className="mb-2 block font-semibold">Meal Type</label>
+
       <select
         className={fieldClass}
         value={mode}
@@ -127,13 +168,15 @@ function MealBuilder({
       {mode === "fixed" ? (
         <div className="mt-4">
           <label className="mb-2 block font-semibold">Choose Meal</label>
+
           <select
             className={fieldClass}
             value={fixedMeal.id}
             onChange={(e) =>
               setFixedMeal(
-                fixedMeals.find((meal) => meal.id === Number(e.target.value)) ||
-                  fixedMeals[0]
+                fixedMeals.find(
+                  (meal) => meal.id === Number(e.target.value)
+                ) || fixedMeals[0]
               )
             }
           >
@@ -149,6 +192,7 @@ function MealBuilder({
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="mb-2 block font-semibold">Protein</label>
+
               <select
                 className={fieldClass}
                 value={protein.name}
@@ -169,6 +213,7 @@ function MealBuilder({
 
             <div>
               <label className="mb-2 block font-semibold">Protein Oz</label>
+
               <input
                 required
                 type="number"
@@ -183,6 +228,7 @@ function MealBuilder({
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="mb-2 block font-semibold">Carb</label>
+
               <select
                 className={fieldClass}
                 value={carb.name}
@@ -203,6 +249,7 @@ function MealBuilder({
 
             <div>
               <label className="mb-2 block font-semibold">Carb Oz</label>
+
               <input
                 required
                 type="number"
@@ -216,11 +263,14 @@ function MealBuilder({
 
           <div>
             <label className="mb-2 block font-semibold">Fat / Sauce</label>
+
             <select
               className={fieldClass}
               value={fat.name}
               onChange={(e) =>
-                setFat(fats.find((item) => item.name === e.target.value) || fats[0])
+                setFat(
+                  fats.find((item) => item.name === e.target.value) || fats[0]
+                )
               }
             >
               {fats.map((item) => (
@@ -233,12 +283,14 @@ function MealBuilder({
 
           <div>
             <label className="mb-2 block font-semibold">Side</label>
+
             <select
               className={fieldClass}
               value={side.name}
               onChange={(e) =>
                 setSide(
-                  sides.find((item) => item.name === e.target.value) || sides[0]
+                  sides.find((item) => item.name === e.target.value) ||
+                    sides[0]
                 )
               }
             >
@@ -252,8 +304,57 @@ function MealBuilder({
         </div>
       )}
 
-      <div className="mt-5 rounded-2xl bg-green-50 p-4 text-lg font-bold text-green-800">
-        {label} Total: ${total.toFixed(2)}
+      <div className="mt-5 rounded-2xl bg-green-50 p-4">
+        <p className="text-lg font-bold text-green-800">
+          {label} Total: ${total.toFixed(2)}
+        </p>
+
+        {mode === "fixed" && fixedMeal.macros && (
+          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="rounded-xl bg-white p-3 text-center shadow-sm">
+              <p className="text-xs font-semibold uppercase text-slate-500">
+                Calories
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {fixedMeal.macros.calories}
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white p-3 text-center shadow-sm">
+              <p className="text-xs font-semibold uppercase text-slate-500">
+                Protein
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {fixedMeal.macros.protein}g
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white p-3 text-center shadow-sm">
+              <p className="text-xs font-semibold uppercase text-slate-500">
+                Carbs
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {fixedMeal.macros.carbs}g
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white p-3 text-center shadow-sm">
+              <p className="text-xs font-semibold uppercase text-slate-500">
+                Fat
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {fixedMeal.macros.fat}g
+              </p>
+            </div>
+          </div>
+        )}
+
+        {mode === "custom" && (
+          <p className="mt-3 text-sm font-semibold text-slate-600">
+            Custom build macros will vary based on your selected ounces and
+            ingredients.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -372,7 +473,8 @@ export default function MealPlanPage() {
       : 0;
 
   const discountAmount = subtotal * (discountPercent / 100);
-  const containerFee = containerOption === "Need Containers" ? totalMeals * 2 : 0;
+  const containerFee =
+    containerOption === "Need Containers" ? totalMeals * 2 : 0;
   const grandTotal = subtotal - discountAmount + containerFee;
 
   function mealText(
@@ -386,6 +488,7 @@ export default function MealPlanPage() {
     side: any
   ) {
     if (mode === "fixed") return fixedMeal.name;
+
     return `${proteinOz}oz ${protein.name}, ${carbOz}oz ${carb.name}, ${fat.name}, ${side.name}`;
   }
 
@@ -394,10 +497,7 @@ export default function MealPlanPage() {
 
     const cleanPhone = cleanPhoneNumber(phoneNumber);
 
-    if (
-      cleanPhone.startsWith("1268") ||
-      cleanPhone.startsWith("268")
-    ) {
+    if (cleanPhone.startsWith("1268") || cleanPhone.startsWith("268")) {
       alert(
         "Please enter your WhatsApp number without the country code. The country code is already selected."
       );
@@ -584,13 +684,16 @@ ${notes || "None"}
           <p className="text-sm font-bold uppercase text-green-600">
             Macro Meals
           </p>
+
           <h1 className="mt-2 text-4xl font-bold">
             Meal Plan Quote Calculator
           </h1>
+
           <p className="mt-2 text-slate-600">
             7+ meals get 10% off. Health Addictions members use code
             HEALTHADDICT26 for 15% off.
           </p>
+
           <p className="mt-2 text-sm font-semibold text-slate-500">
             Requests must be submitted at least 2 days before pickup. Containers
             are $2 per meal unless you provide your own containers in advance.
@@ -638,13 +741,16 @@ ${notes || "None"}
                 placeholder="WhatsApp Number without country code"
                 className={fieldClass}
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(cleanPhoneNumber(e.target.value))}
+                onChange={(e) =>
+                  setPhoneNumber(cleanPhoneNumber(e.target.value))
+                }
               />
 
               <div>
                 <label className="mb-2 block font-semibold">
                   Requested Pickup Date
                 </label>
+
                 <input
                   required
                   type="date"
@@ -652,6 +758,7 @@ ${notes || "None"}
                   value={requestedPickupDate}
                   onChange={(e) => setRequestedPickupDate(e.target.value)}
                 />
+
                 <p className="mt-2 text-sm font-semibold text-slate-500">
                   Must be at least 2 days in advance.
                 </p>
@@ -661,6 +768,7 @@ ${notes || "None"}
                 <label className="mb-2 block font-semibold">
                   Container Option
                 </label>
+
                 <select
                   required
                   className={fieldClass}
@@ -682,6 +790,7 @@ ${notes || "None"}
                 <label className="mb-2 block font-semibold">
                   Number of Days
                 </label>
+
                 <input
                   required
                   type="number"
@@ -696,6 +805,7 @@ ${notes || "None"}
                 <label className="mb-2 block font-semibold">
                   Meals Per Day
                 </label>
+
                 <select
                   required
                   className={fieldClass}
@@ -712,6 +822,7 @@ ${notes || "None"}
                 <label className="mb-2 block font-semibold">
                   Discount Code
                 </label>
+
                 <input
                   placeholder="Enter code if applicable"
                   className={fieldClass}
@@ -729,8 +840,10 @@ ${notes || "None"}
                   onChange={() => setSubscribe(!subscribe)}
                   className="mt-1"
                 />
+
                 <span className="text-sm font-semibold text-slate-700">
-                  Yes, I’d like to receive updates, discounts and special meal offers.
+                  Yes, I’d like to receive updates, discounts and special meal
+                  offers.
                 </span>
               </label>
 
@@ -821,4 +934,86 @@ ${notes || "None"}
               <div className="flex justify-between border-b pb-3">
                 <span>Meal 1</span>
                 <span className="font-semibold">
-                  ${mealOneTotal.toFixed(2
+                  ${mealOneTotal.toFixed(2)}
+                </span>
+              </div>
+
+              {mealsPerDay >= 2 && (
+                <div className="flex justify-between border-b pb-3">
+                  <span>Meal 2</span>
+                  <span className="font-semibold">
+                    ${mealTwoTotal.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              {mealsPerDay === 3 && (
+                <div className="flex justify-between border-b pb-3">
+                  <span>Meal 3</span>
+                  <span className="font-semibold">
+                    ${mealThreeTotal.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-between border-b pb-3">
+                <span>Daily Total</span>
+                <span className="font-semibold">${dailyTotal.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between border-b pb-3">
+                <span>Subtotal</span>
+                <span className="font-semibold">${subtotal.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between border-b pb-3">
+                <span>Discount</span>
+                <span className="font-semibold">
+                  {discountPercent}% - ${discountAmount.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between border-b pb-3">
+                <span>Container Fee</span>
+                <span className="font-semibold">
+                  ${containerFee.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between pt-3 text-2xl font-bold">
+                <span>Total</span>
+                <span>${grandTotal.toFixed(2)}</span>
+              </div>
+            </div>
+
+            {totalMeals < 7 && (
+              <p className="mt-4 rounded-2xl bg-yellow-50 p-3 text-sm font-semibold text-yellow-800">
+                Discount applies only when ordering 7 meals or more.
+              </p>
+            )}
+
+            {totalMeals >= 7 && discountPercent === 10 && (
+              <p className="mt-4 rounded-2xl bg-green-50 p-3 text-sm font-semibold text-green-800">
+                Regular 10% discount applied.
+              </p>
+            )}
+
+            {totalMeals >= 7 && discountPercent === 15 && (
+              <p className="mt-4 rounded-2xl bg-green-50 p-3 text-sm font-semibold text-green-800">
+                Health Addictions member 15% discount applied.
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-8 w-full rounded-2xl bg-green-600 px-5 py-4 font-bold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+            >
+              {loading ? "Submitting..." : "Submit Meal Plan Request"}
+            </button>
+          </div>
+        </div>
+      </form>
+    </main>
+  );
+}
