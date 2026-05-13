@@ -386,11 +386,7 @@ Packed meal requests must be submitted at least 2 days in advance.
     <main className="min-h-screen bg-[#f3f3f3] px-4 py-8 pb-28">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 rounded-3xl bg-white p-6 text-center shadow-xl">
-          <img
-            src="/logo.png"
-            alt="Macro Meals On Wheels"
-            className="mx-auto mb-4 w-32"
-          />
+        
 
           <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
             Weekly Meal Planning
