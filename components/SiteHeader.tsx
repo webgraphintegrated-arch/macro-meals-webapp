@@ -7,15 +7,17 @@ import { usePathname } from "next/navigation";
 export default function SiteHeader() {
   const pathname = usePathname();
 
-  // Hide header on homepage
-  if (pathname === "/") {
+  // Hide header on these pages
+  if (
+    pathname === "/" ||
+    pathname === "/menu"
+  ) {
     return null;
   }
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-3">
-
         <Link href="/">
           <Image
             src="/logo.png"
@@ -26,7 +28,6 @@ export default function SiteHeader() {
             className="h-auto w-auto object-contain"
           />
         </Link>
-
       </div>
     </header>
   );
