@@ -1,377 +1,671 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-const menuCategories = [
+const fixedMeals = [
   {
-    title: "Burgers",
-    description:
-      "100% homemade burgers sautéed with onion, mushrooms, lettuce, tomato, ketchup, mustard and mayo. Choice of wheat, white bread or tortilla.",
-    items: [
-      { name: "Ground Beef", price: 20 },
-      { name: "Ground Chicken", price: 15 },
-      { name: "Chicken Breast", price: 15 },
-      { name: "Fish", price: 20 },
-      { name: "Shrimp", price: 25 },
-      { name: "Salmon", price: 28 },
-    ],
+    id: 1,
+    name: "6oz Chicken Veggie Rice Meal",
+    price: 25,
+    macros: {
+      calories: 357,
+      protein: 35,
+      carbs: 49,
+      fat: 5,
+    },
   },
   {
-    title: "Wraps",
-    description:
-      "Flour/wheat tortilla filled with protein, salad, mushroom, salsa, cheese and sour cream.",
-    items: [
-      { name: "Ground Beef", price: 24 },
-      { name: "Ground Chicken", price: 19 },
-      { name: "Chicken", price: 19 },
-      { name: "Fish", price: 25 },
-      { name: "Shrimp", price: 35 },
-      { name: "Salmon", price: 30 },
-      { name: "Steak", price: 32 },
-    ],
+    id: 2,
+    name: "6oz Chicken Sweet Potato Meal",
+    price: 32,
+    macros: {
+      calories: 420,
+      protein: 38,
+      carbs: 52,
+      fat: 6,
+    },
   },
   {
-    title: "Veggie Wrap",
-    description:
-      "Flour/wheat tortilla filled with fresh vegetables, salad, mushroom, salsa, cheese and sour cream.",
-    items: [{ name: "Veggie", price: 15 }],
+    id: 3,
+    name: "6oz Chicken Pasta Meal",
+    price: 25,
+    macros: {
+      calories: 460,
+      protein: 35,
+      carbs: 58,
+      fat: 8,
+    },
   },
   {
-    title: "Salads",
-    description:
-      "Fresh salad bowl served with your choice of protein and balanced toppings.",
-    items: [
-      { name: "Ground Beef", price: 35 },
-      { name: "Ground Chicken", price: 30 },
-      { name: "Chicken", price: 30 },
-      { name: "Fish", price: 35 },
-      { name: "Shrimp", price: 50 },
-      { name: "Salmon", price: 45 },
-      { name: "Steak", price: 45 },
-    ],
-  },
-  {
-    title: "Bowl",
-    description:
-      "Balanced bowl meal served with your choice of protein and meal base.",
-    items: [
-      { name: "Ground Beef", price: 40 },
-      { name: "Ground Chicken", price: 35 },
-      { name: "Chicken", price: 35 },
-      { name: "Fish", price: 40 },
-      { name: "Shrimp", price: 55 },
-      { name: "Salmon", price: 50 },
-      { name: "Steak", price: 50 },
-    ],
-  },
-  {
-    title: "Sweet Potato Meals",
-    description:
-      "Sweet potato meal served with your selected protein for a balanced packed meal option.",
-    items: [
-      { name: "Chicken", price: 32 },
-      { name: "Fish", price: 40 },
-      { name: "Shrimp", price: 45 },
-      { name: "Salmon", price: 50 },
-      { name: "Steak", price: 50 },
-    ],
-  },
-  {
-    title: "Stuffed Potato Meals",
-    description:
-      "Stuffed potato packed with your selected protein or veggie option.",
-    items: [
-      { name: "Veggie", price: 20 },
-      { name: "Chicken", price: 30 },
-      { name: "Fish", price: 35 },
-      { name: "Shrimp", price: 35 },
-      { name: "Salmon", price: 40 },
-      { name: "Steak", price: 40 },
-    ],
-  },
-  {
-    title: "Veggie Rice Meals",
-    description:
-      "Veggie rice meal served with your choice of protein or veggie option.",
-    items: [
-      { name: "Veggie", price: 17 },
-      { name: "Chicken", price: 25 },
-      { name: "Fish", price: 30 },
-      { name: "Shrimp", price: 40 },
-      { name: "Salmon", price: 40 },
-      { name: "Steak", price: 40 },
-      { name: "Ground Beef", price: 30 },
-      { name: "Ground Chicken", price: 25 },
-    ],
-  },
-  {
-    title: "Sweet Potato Fries Meals",
-    description:
-      "Sweet potato fries meal served with your selected protein or veggie option.",
-    items: [
-      { name: "Veggie", price: 25 },
-      { name: "Chicken", price: 32 },
-      { name: "Fish", price: 40 },
-      { name: "Shrimp", price: 50 },
-      { name: "Salmon", price: 50 },
-      { name: "Steak", price: 50 },
-    ],
-  },
-  {
-    title: "Dieter’s Olive Oil Pasta",
-    description:
-      "Olive oil pasta made for a lighter meal option with your choice of protein or veggie.",
-    items: [
-      { name: "Veggie", price: 20 },
-      { name: "Chicken", price: 25 },
-      { name: "Fish", price: 35 },
-      { name: "Shrimp", price: 35 },
-      { name: "Salmon", price: 40 },
-      { name: "Steak", price: 40 },
-      { name: "Ground Beef", price: 30 },
-      { name: "Ground Chicken", price: 25 },
-    ],
-  },
-  {
-    title: "Gainer’s Cream Pasta",
-    description:
-      "Cream pasta made for a heavier meal option with your choice of protein or veggie.",
-    items: [
-      { name: "Veggie", price: 25 },
-      { name: "Chicken", price: 35 },
-      { name: "Fish", price: 40 },
-      { name: "Shrimp", price: 45 },
-      { name: "Salmon", price: 45 },
-      { name: "Steak", price: 50 },
-      { name: "Ground Beef", price: 40 },
-      { name: "Ground Chicken", price: 35 },
-    ],
-  },
-  {
-    title: "Quesadilla",
-    description:
-      "Quesadilla filled with your selected protein, cheese and savory fillings.",
-    items: [
-      { name: "Ground Beef", price: 30 },
-      { name: "Ground Chicken", price: 27 },
-      { name: "Chicken Breast", price: 27 },
-      { name: "Fish", price: 31 },
-      { name: "Shrimp", price: 44 },
-      { name: "Salmon", price: 38 },
-      { name: "Steak", price: 39 },
-    ],
+    id: 4,
+    name: "4oz Chicken Stuffed Potato Meal",
+    price: 30,
+    macros: {
+      calories: 390,
+      protein: 28,
+      carbs: 45,
+      fat: 7,
+    },
   },
 ];
 
 const countryCodes = [
-  { flag: "🇦🇬", label: "Antigua & Barbuda", code: "+1268" },
-  { flag: "🇺🇸", label: "United States", code: "+1" },
-  { flag: "🇨🇦", label: "Canada", code: "+1" },
-  { flag: "🇬🇧", label: "United Kingdom", code: "+44" },
-  { flag: "🇯🇲", label: "Jamaica", code: "+1876" },
-  { flag: "🇹🇹", label: "Trinidad & Tobago", code: "+1868" },
-  { flag: "🇧🇧", label: "Barbados", code: "+1246" },
-  { flag: "🇬🇾", label: "Guyana", code: "+592" },
+  { label: "Antigua +1 268", value: "1268" },
+  { label: "USA/Canada +1", value: "1" },
+  { label: "UK +44", value: "44" },
+  { label: "Jamaica +1 876", value: "1876" },
+  { label: "Barbados +1 246", value: "1246" },
+  { label: "Trinidad +1 868", value: "1868" },
 ];
 
-type SelectedMeal = {
-  id: string;
-  category: string;
-  name: string;
-  price: number;
-  quantity: number;
-};
+const proteins = [
+  { name: "Chicken Breast", pricePerOz: 2 },
+  { name: "Fish", pricePerOz: 3 },
+  { name: "Steak", pricePerOz: 5 },
+  { name: "Shrimp", pricePerOz: 6 },
+  { name: "Salmon", pricePerOz: 5 },
+  { name: "Ground Beef", pricePerOz: 3 },
+  { name: "Ground Chicken", pricePerOz: 1.5 },
+];
 
-export default function PackedMealRequestPage() {
-  const [fullName, setFullName] = useState("");
-  const [countryCode, setCountryCode] = useState("+1268");
-  const [whatsapp, setWhatsapp] = useState("");
+const carbs = [
+  { name: "Burger Bread", pricePerOz: 2 },
+  { name: "Wheat Tortilla", pricePerOz: 2.5 },
+  { name: "Rice", pricePerOz: 1.25 },
+  { name: "Beans", pricePerOz: 1 },
+  { name: "French Fries", pricePerOz: 1 },
+  { name: "Sweet Potato French Fries", pricePerOz: 2.25 },
+  { name: "Sweet Potato", pricePerOz: 1.25 },
+  { name: "White Potato", pricePerOz: 1 },
+  { name: "Whole Wheat Noodles", pricePerOz: 1.25 },
+  { name: "Plain Noodles", pricePerOz: 1 },
+  { name: "No Carb", pricePerOz: 0 },
+];
+
+const fats = [
+  { name: "Olive Oil", price: 2 },
+  { name: "Coconut Oil", price: 2 },
+  { name: "Avocado Oil", price: 2 },
+  { name: "Avocado", price: 2 },
+  { name: "Cream Sauce", price: 2 },
+  { name: "Cheese", price: 3 },
+  { name: "No Fat", price: 0 },
+];
+
+const sides = [
+  { name: "Steamed Veg", price: 5 },
+  { name: "Salad", price: 5 },
+  { name: "Veg + Salad", price: 8 },
+  { name: "No Side", price: 0 },
+];
+
+type MealMode = "fixed" | "custom";
+
+const fieldClass =
+  "w-full rounded-2xl border border-slate-300 bg-white p-4 text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-green-600 focus:ring-2 focus:ring-green-100";
+
+function cleanPhoneNumber(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+function isAtLeastTwoDaysAhead(dateValue: string) {
+  if (!dateValue) return false;
+
+  const today = new Date();
+  const selectedDate = new Date(dateValue + "T00:00:00");
+
+  today.setHours(0, 0, 0, 0);
+
+  const differenceInMs = selectedDate.getTime() - today.getTime();
+  const differenceInDays = differenceInMs / (1000 * 60 * 60 * 24);
+
+  return differenceInDays >= 2;
+}
+
+function MealBuilder({
+  label,
+  mode,
+  setMode,
+  fixedMeal,
+  setFixedMeal,
+  protein,
+  setProtein,
+  proteinOz,
+  setProteinOz,
+  carb,
+  setCarb,
+  carbOz,
+  setCarbOz,
+  fat,
+  setFat,
+  side,
+  setSide,
+}: any) {
+  const total =
+    mode === "fixed"
+      ? fixedMeal.price
+      : protein.pricePerOz * proteinOz +
+        carb.pricePerOz * carbOz +
+        fat.price +
+        side.price;
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h3 className="mb-4 text-xl font-bold text-slate-900">{label}</h3>
+
+      <label className="mb-2 block font-semibold">Meal Type</label>
+
+      <select
+        className={fieldClass}
+        value={mode}
+        onChange={(e) => setMode(e.target.value as MealMode)}
+      >
+        <option value="fixed">Fixed Menu Meal</option>
+        <option value="custom">Custom Build</option>
+      </select>
+
+      {mode === "fixed" ? (
+        <div className="mt-4">
+          <label className="mb-2 block font-semibold">Choose Meal</label>
+
+          <select
+            className={fieldClass}
+            value={fixedMeal.id}
+            onChange={(e) =>
+              setFixedMeal(
+                fixedMeals.find(
+                  (meal) => meal.id === Number(e.target.value)
+                ) || fixedMeals[0]
+              )
+            }
+          >
+            {fixedMeals.map((meal) => (
+              <option key={meal.id} value={meal.id}>
+                {meal.name} - ${meal.price}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : (
+        <div className="mt-4 space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block font-semibold">Protein</label>
+
+              <select
+                className={fieldClass}
+                value={protein.name}
+                onChange={(e) =>
+                  setProtein(
+                    proteins.find((item) => item.name === e.target.value) ||
+                      proteins[0]
+                  )
+                }
+              >
+                {proteins.map((item) => (
+                  <option key={item.name} value={item.name}>
+                    {item.name} - ${item.pricePerOz}/oz
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-2 block font-semibold">Protein Oz</label>
+
+              <input
+                required
+                type="number"
+                min={0}
+                className={fieldClass}
+                value={proteinOz}
+                onChange={(e) => setProteinOz(Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block font-semibold">Carb</label>
+
+              <select
+                className={fieldClass}
+                value={carb.name}
+                onChange={(e) =>
+                  setCarb(
+                    carbs.find((item) => item.name === e.target.value) ||
+                      carbs[0]
+                  )
+                }
+              >
+                {carbs.map((item) => (
+                  <option key={item.name} value={item.name}>
+                    {item.name} - ${item.pricePerOz}/oz
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-2 block font-semibold">Carb Oz</label>
+
+              <input
+                required
+                type="number"
+                min={0}
+                className={fieldClass}
+                value={carbOz}
+                onChange={(e) => setCarbOz(Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-2 block font-semibold">Fat / Sauce</label>
+
+            <select
+              className={fieldClass}
+              value={fat.name}
+              onChange={(e) =>
+                setFat(
+                  fats.find((item) => item.name === e.target.value) || fats[0]
+                )
+              }
+            >
+              {fats.map((item) => (
+                <option key={item.name} value={item.name}>
+                  {item.name} - ${item.price}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block font-semibold">Side</label>
+
+            <select
+              className={fieldClass}
+              value={side.name}
+              onChange={(e) =>
+                setSide(
+                  sides.find((item) => item.name === e.target.value) ||
+                    sides[0]
+                )
+              }
+            >
+              {sides.map((item) => (
+                <option key={item.name} value={item.name}>
+                  {item.name} - ${item.price}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-5 rounded-2xl bg-green-50 p-4">
+        <p className="text-lg font-bold text-green-800">
+          {label} Total: ${total.toFixed(2)}
+        </p>
+
+        {mode === "fixed" && fixedMeal.macros && (
+          <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="rounded-xl bg-white p-3 text-center shadow-sm">
+              <p className="text-xs font-semibold uppercase text-slate-500">
+                Calories
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {fixedMeal.macros.calories}
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white p-3 text-center shadow-sm">
+              <p className="text-xs font-semibold uppercase text-slate-500">
+                Protein
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {fixedMeal.macros.protein}g
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white p-3 text-center shadow-sm">
+              <p className="text-xs font-semibold uppercase text-slate-500">
+                Carbs
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {fixedMeal.macros.carbs}g
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white p-3 text-center shadow-sm">
+              <p className="text-xs font-semibold uppercase text-slate-500">
+                Fat
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {fixedMeal.macros.fat}g
+              </p>
+            </div>
+          </div>
+        )}
+
+        {mode === "custom" && (
+          <p className="mt-3 text-sm font-semibold text-slate-600">
+            Custom build macros will vary based on your selected ounces and
+            ingredients.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function MealPlanPage() {
+  const [customerName, setCustomerName] = useState("");
   const [email, setEmail] = useState("");
-  const [requestedStartDate, setRequestedStartDate] = useState("");
-  const [promoCode, setPromoCode] = useState("");
-  const [notes, setNotes] = useState("");
+  const [countryCode, setCountryCode] = useState("1268");
+  const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [requestedPickupDate, setRequestedPickupDate] = useState("");
   const [containerOption, setContainerOption] = useState("Need Containers");
+  const [notes, setNotes] = useState("");
   const [subscribe, setSubscribe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
-  const [selectedMeals, setSelectedMeals] = useState<SelectedMeal[]>([]);
 
-  const activeCategory = menuCategories[activeCategoryIndex];
+  const [days, setDays] = useState(7);
+  const [mealsPerDay, setMealsPerDay] = useState(2);
+  const [discountCode, setDiscountCode] = useState("");
 
-  const totalMeals = selectedMeals.reduce(
-    (total, meal) => total + meal.quantity,
-    0
+  const [mealOneMode, setMealOneMode] = useState<MealMode>("fixed");
+  const [mealTwoMode, setMealTwoMode] = useState<MealMode>("fixed");
+  const [mealThreeMode, setMealThreeMode] = useState<MealMode>("fixed");
+
+  const [mealOneFixed, setMealOneFixed] = useState(fixedMeals[0]);
+  const [mealTwoFixed, setMealTwoFixed] = useState(fixedMeals[1]);
+  const [mealThreeFixed, setMealThreeFixed] = useState(fixedMeals[2]);
+
+  const [mealOneProtein, setMealOneProtein] = useState(proteins[0]);
+  const [mealOneProteinOz, setMealOneProteinOz] = useState(5);
+  const [mealOneCarb, setMealOneCarb] = useState(carbs[6]);
+  const [mealOneCarbOz, setMealOneCarbOz] = useState(10);
+  const [mealOneFat, setMealOneFat] = useState(fats[6]);
+  const [mealOneSide, setMealOneSide] = useState(sides[0]);
+
+  const [mealTwoProtein, setMealTwoProtein] = useState(proteins[0]);
+  const [mealTwoProteinOz, setMealTwoProteinOz] = useState(5);
+  const [mealTwoCarb, setMealTwoCarb] = useState(carbs[6]);
+  const [mealTwoCarbOz, setMealTwoCarbOz] = useState(10);
+  const [mealTwoFat, setMealTwoFat] = useState(fats[6]);
+  const [mealTwoSide, setMealTwoSide] = useState(sides[0]);
+
+  const [mealThreeProtein, setMealThreeProtein] = useState(proteins[0]);
+  const [mealThreeProteinOz, setMealThreeProteinOz] = useState(5);
+  const [mealThreeCarb, setMealThreeCarb] = useState(carbs[6]);
+  const [mealThreeCarbOz, setMealThreeCarbOz] = useState(10);
+  const [mealThreeFat, setMealThreeFat] = useState(fats[6]);
+  const [mealThreeSide, setMealThreeSide] = useState(sides[0]);
+
+  const getMealTotal = (
+    mode: MealMode,
+    fixed: any,
+    protein: any,
+    proteinOz: number,
+    carb: any,
+    carbOz: number,
+    fat: any,
+    side: any
+  ) =>
+    mode === "fixed"
+      ? fixed.price
+      : protein.pricePerOz * proteinOz +
+        carb.pricePerOz * carbOz +
+        fat.price +
+        side.price;
+
+  const mealOneTotal = getMealTotal(
+    mealOneMode,
+    mealOneFixed,
+    mealOneProtein,
+    mealOneProteinOz,
+    mealOneCarb,
+    mealOneCarbOz,
+    mealOneFat,
+    mealOneSide
   );
 
-  const subtotal = selectedMeals.reduce(
-    (total, meal) => total + meal.price * meal.quantity,
-    0
+  const mealTwoTotal = getMealTotal(
+    mealTwoMode,
+    mealTwoFixed,
+    mealTwoProtein,
+    mealTwoProteinOz,
+    mealTwoCarb,
+    mealTwoCarbOz,
+    mealTwoFat,
+    mealTwoSide
   );
 
-  const isMemberCode = promoCode.trim().toUpperCase() === "HEALTHADDICT26";
-  const discountPercent = totalMeals >= 7 ? (isMemberCode ? 15 : 10) : 0;
+  const mealThreeTotal = getMealTotal(
+    mealThreeMode,
+    mealThreeFixed,
+    mealThreeProtein,
+    mealThreeProteinOz,
+    mealThreeCarb,
+    mealThreeCarbOz,
+    mealThreeFat,
+    mealThreeSide
+  );
+
+  const dailyTotal =
+    mealsPerDay === 1
+      ? mealOneTotal
+      : mealsPerDay === 2
+      ? mealOneTotal + mealTwoTotal
+      : mealOneTotal + mealTwoTotal + mealThreeTotal;
+
+  const totalMeals = days * mealsPerDay;
+  const subtotal = useMemo(() => dailyTotal * days, [dailyTotal, days]);
+
+  const discountPercent =
+    totalMeals >= 7 && discountCode.trim().toUpperCase() === "HEALTHADDICT26"
+      ? 15
+      : totalMeals >= 7
+      ? 10
+      : 0;
+
   const discountAmount = subtotal * (discountPercent / 100);
-  const containerFee = containerOption === "Need Containers" ? totalMeals * 2 : 0;
-  const estimatedTotal = subtotal - discountAmount + containerFee;
+  const containerFee =
+    containerOption === "Need Containers" ? totalMeals * 2 : 0;
+  const grandTotal = subtotal - discountAmount + containerFee;
 
-  function isAtLeastTwoDaysAhead(dateValue: string) {
-    const today = new Date();
-    const selectedDate = new Date(dateValue + "T00:00:00");
+  function mealText(
+    mode: MealMode,
+    fixedMeal: any,
+    protein: any,
+    proteinOz: number,
+    carb: any,
+    carbOz: number,
+    fat: any,
+    side: any
+  ) {
+    if (mode === "fixed") return fixedMeal.name;
 
-    today.setHours(0, 0, 0, 0);
-
-    const differenceInMs = selectedDate.getTime() - today.getTime();
-    const differenceInDays = differenceInMs / (1000 * 60 * 60 * 24);
-
-    return differenceInDays >= 2;
+    return `${proteinOz}oz ${protein.name}, ${carbOz}oz ${carb.name}, ${fat.name}, ${side.name}`;
   }
 
-  function addMeal(category: string, item: { name: string; price: number }) {
-    const id = `${category}-${item.name}`;
+  async function handleWhatsapp(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
 
-    setSelectedMeals((currentMeals) => {
-      const existingMeal = currentMeals.find((meal) => meal.id === id);
+    const cleanPhone = cleanPhoneNumber(phoneNumber);
 
-      if (existingMeal) {
-        return currentMeals.map((meal) =>
-          meal.id === id ? { ...meal, quantity: meal.quantity + 1 } : meal
-        );
-      }
-
-      return [
-        ...currentMeals,
-        {
-          id,
-          category,
-          name: item.name,
-          price: item.price,
-          quantity: 1,
-        },
-      ];
-    });
-  }
-
-  function decreaseMeal(id: string) {
-    setSelectedMeals((currentMeals) =>
-      currentMeals
-        .map((meal) =>
-          meal.id === id ? { ...meal, quantity: meal.quantity - 1 } : meal
-        )
-        .filter((meal) => meal.quantity > 0)
-    );
-  }
-
-  function increaseMeal(id: string) {
-    setSelectedMeals((currentMeals) =>
-      currentMeals.map((meal) =>
-        meal.id === id ? { ...meal, quantity: meal.quantity + 1 } : meal
-      )
-    );
-  }
-
-  function removeMeal(id: string) {
-    setSelectedMeals((currentMeals) =>
-      currentMeals.filter((meal) => meal.id !== id)
-    );
-  }
-
-  async function submitRequest() {
-    if (!fullName || !whatsapp || !email || !requestedStartDate) {
+    if (cleanPhone.startsWith("1268") || cleanPhone.startsWith("268")) {
       alert(
-        "Please fill in your name, WhatsApp number, email address and requested pickup date."
+        "Please enter your WhatsApp number without the country code. The country code is already selected."
       );
       return;
     }
 
-    if (totalMeals < 7) {
-      alert("Packed meal requests must include at least 7 meals.");
+    if (cleanPhone.length < 7) {
+      alert("Please enter a valid WhatsApp number.");
       return;
     }
 
-    if (!isAtLeastTwoDaysAhead(requestedStartDate)) {
-      alert("Packed meal requests must be submitted at least 2 days in advance.");
+    if (!requestedPickupDate) {
+      alert("Please select your requested pickup date.");
+      return;
+    }
+
+    if (!isAtLeastTwoDaysAhead(requestedPickupDate)) {
+      alert("Weekly Meal Prep Requests must be submitted at least 2 days in advance.");
+      return;
+    }
+
+    if (totalMeals < 7) {
+      alert("Weekly Meal Prep Requests must include at least 7 meals.");
       return;
     }
 
     setLoading(true);
 
-    const fullWhatsapp = `${countryCode}${whatsapp}`;
+    const fullPhone = `${countryCode}${cleanPhone}`;
 
-    const requestItems = selectedMeals.map((meal) => ({
-      category: meal.category,
-      name: meal.name,
-      price: meal.price,
-      quantity: meal.quantity,
-      total: meal.price * meal.quantity,
-    }));
+    const mealOneText = mealText(
+      mealOneMode,
+      mealOneFixed,
+      mealOneProtein,
+      mealOneProteinOz,
+      mealOneCarb,
+      mealOneCarbOz,
+      mealOneFat,
+      mealOneSide
+    );
+
+    const mealTwoText = mealText(
+      mealTwoMode,
+      mealTwoFixed,
+      mealTwoProtein,
+      mealTwoProteinOz,
+      mealTwoCarb,
+      mealTwoCarbOz,
+      mealTwoFat,
+      mealTwoSide
+    );
+
+    const mealThreeText = mealText(
+      mealThreeMode,
+      mealThreeFixed,
+      mealThreeProtein,
+      mealThreeProteinOz,
+      mealThreeCarb,
+      mealThreeCarbOz,
+      mealThreeFat,
+      mealThreeSide
+    );
+
+    const items = [
+      {
+        category: "Meal Plan",
+        name: `Meal 1: ${mealOneText}`,
+        price: mealOneTotal,
+        quantity: days,
+        total: mealOneTotal * days,
+      },
+      ...(mealsPerDay >= 2
+        ? [
+            {
+              category: "Meal Plan",
+              name: `Meal 2: ${mealTwoText}`,
+              price: mealTwoTotal,
+              quantity: days,
+              total: mealTwoTotal * days,
+            },
+          ]
+        : []),
+      ...(mealsPerDay === 3
+        ? [
+            {
+              category: "Meal Plan",
+              name: `Meal 3: ${mealThreeText}`,
+              price: mealThreeTotal,
+              quantity: days,
+              total: mealThreeTotal * days,
+            },
+          ]
+        : []),
+    ];
 
     const { error } = await supabase.from("packed_meal_requests").insert([
       {
-        customer_name: fullName,
-        whatsapp: fullWhatsapp,
+        customer_name: customerName,
+        whatsapp: `+${fullPhone}`,
         email,
         meals_count: totalMeals,
-        requested_start_date: requestedStartDate,
+        requested_start_date: requestedPickupDate,
         notes,
-        promo_code: promoCode.trim(),
+        promo_code: discountCode.trim(),
         discount_percent: discountPercent,
-        items: requestItems,
+        status: "New Request",
+        items,
         subtotal,
-        estimated_total: estimatedTotal,
+        estimated_total: grandTotal,
         container_option: containerOption,
         container_fee: containerFee,
         subscribe,
-        status: "New Request",
       },
     ]);
 
     if (error) {
       console.error(error);
-      alert("Failed to submit packed meal request.");
+      alert("Failed to submit weekly meal prep request.");
       setLoading(false);
       return;
     }
 
-    const mealBreakdown = selectedMeals
-      .map(
-        (meal) =>
-          `${meal.quantity}x ${meal.category} - ${meal.name} - $${
-            meal.price * meal.quantity
-          }`
-      )
-      .join("\n");
-
     const message = `
-New Packed Meal Request
+MACRO MEALS PLAN REQUEST
 
-Customer: ${fullName}
-WhatsApp: ${fullWhatsapp}
+Customer: ${customerName}
 Email: ${email}
+WhatsApp: +${fullPhone}
 
-Requested Pickup Date: ${requestedStartDate}
+Requested Pickup Date: ${requestedPickupDate}
+
+Plan:
+${days} day(s)
+${mealsPerDay} meal(s) per day
 Total Meals: ${totalMeals}
 
-Selected Meals:
-${mealBreakdown}
+Meal 1:
+${mealOneText}
+Price: $${mealOneTotal.toFixed(2)}
 
-Subtotal: $${subtotal}
-Discount Applied: ${discountPercent}%
-Discount Amount: -$${discountAmount.toFixed(2)}
+${
+  mealsPerDay >= 2
+    ? `Meal 2:
+${mealTwoText}
+Price: $${mealTwoTotal.toFixed(2)}`
+    : ""
+}
 
+${
+  mealsPerDay === 3
+    ? `Meal 3:
+${mealThreeText}
+Price: $${mealThreeTotal.toFixed(2)}`
+    : ""
+}
+
+Daily Total: $${dailyTotal.toFixed(2)}
+Subtotal: $${subtotal.toFixed(2)}
+Discount: ${discountPercent}% - $${discountAmount.toFixed(2)}
 Container Option: ${containerOption}
 Container Fee: $${containerFee.toFixed(2)}
+Grand Total: $${grandTotal.toFixed(2)}
 
-Estimated Total: $${estimatedTotal.toFixed(2)}
-
-Promo Code: ${promoCode.trim() || "N/A"}
-Subscribed to Updates: ${subscribe ? "Yes" : "No"}
+Discount Code: ${discountCode || "N/A"}
+Subscribe: ${subscribe ? "Yes" : "No"}
 
 Notes:
 ${notes || "None"}
-
-Important:
-Packed meal requests must be submitted at least 2 days in advance.
 `;
 
     window.open(
@@ -380,211 +674,164 @@ Packed meal requests must be submitted at least 2 days in advance.
     );
 
     setLoading(false);
+    alert("Weekly Meal Prep Request submitted successfully.");
   }
 
   return (
-    <main className="min-h-screen bg-[#f3f3f3] px-4 py-8 pb-28">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8 rounded-3xl bg-white p-6 text-center shadow-xl">
-        
+    <main className="min-h-screen bg-slate-100 p-6 text-slate-900">
+      <form onSubmit={handleWhatsapp} className="mx-auto max-w-7xl">
+        <div className="mb-6 rounded-3xl bg-white p-6 shadow-sm">
+          
 
-          <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
-            Weekly Meal Planning
-          </p>
-
-          <h1 className="mt-2 text-4xl font-black text-[#060d57] md:text-5xl">
-            Request Packed Meals
+          <h1 className="mt-2 text-4xl font-bold">
+            Weekly Meal Prep Request
           </h1>
 
-          <p className="mx-auto mt-3 max-w-2xl font-semibold text-gray-600">
-            Select 7 or more meals for the week ahead. Requests must be
-            submitted at least 2 days in advance.
+          <p className="mt-2 text-slate-600">
+            7+ meals get 10% off. Health Addictions members use code
+            HEALTHADDICT26 for 15% off.
+          </p>
+
+          <p className="mt-2 text-sm font-semibold text-slate-500">
+            Requests must be submitted at least 2 days before pickup. Containers
+            are $2 per meal unless you provide your own containers in advance.
           </p>
         </div>
 
-        <div className="mb-8 grid gap-4 md:grid-cols-3">
-          <div className="rounded-3xl bg-white p-6 shadow-xl">
-            <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
-              Packed Meal Discount
-            </p>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="rounded-3xl bg-white p-6 shadow-sm lg:col-span-2">
+            <h2 className="mb-4 text-2xl font-bold">Customer Details</h2>
 
-            <h2 className="mt-2 text-4xl font-black text-[#060d57]">
-              10% Off
-            </h2>
+            <div className="mb-8 grid gap-4 md:grid-cols-2">
+              <input
+                required
+                placeholder="Customer Name"
+                className={fieldClass}
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+              />
 
-            <p className="mt-2 font-semibold text-gray-600">
-              Automatically applied when selecting 7 or more meals.
-            </p>
-          </div>
+              <input
+                required
+                type="email"
+                placeholder="Email Address"
+                className={fieldClass}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
 
-          <div className="rounded-3xl bg-[#060d57] p-6 text-white shadow-xl">
-            <p className="text-sm font-black uppercase tracking-wide text-white/70">
-              Weekly Requests
-            </p>
+              <select
+                required
+                className={fieldClass}
+                value={countryCode}
+                onChange={(e) => setCountryCode(e.target.value)}
+              >
+                {countryCodes.map((code) => (
+                  <option key={code.value} value={code.value}>
+                    {code.label}
+                  </option>
+                ))}
+              </select>
 
-            <h2 className="mt-2 text-4xl font-black">2 Days Ahead</h2>
+              <input
+                required
+                type="tel"
+                placeholder="WhatsApp Number without country code"
+                className={fieldClass}
+                value={phoneNumber}
+                onChange={(e) =>
+                  setPhoneNumber(cleanPhoneNumber(e.target.value))
+                }
+              />
 
-            <p className="mt-2 font-semibold text-white/80">
-              Requests must be submitted at least 2 days before the requested
-              pickup date.
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-xl">
-            <p className="text-sm font-black uppercase tracking-wide text-[#75a62f]">
-              Containers
-            </p>
-
-            <h2 className="mt-2 text-4xl font-black text-[#060d57]">
-              $2 Each
-            </h2>
-
-            <p className="mt-2 font-semibold text-gray-600">
-              Container fee applies unless you provide your own containers in
-              advance.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-3">
-          <section className="rounded-3xl bg-white p-6 shadow-xl">
-            <h2 className="mb-6 text-3xl font-black text-[#060d57]">
-              Customer Details
-            </h2>
-
-            <div className="space-y-5">
               <div>
-                <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Full Name *
+                <label className="mb-2 block font-semibold">
+                  Requested Pickup Date
                 </label>
 
                 <input
-                  type="text"
-                  placeholder="John Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 font-semibold text-[#060d57] placeholder:text-gray-500 outline-none focus:border-[#75a62f]"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  WhatsApp Number *
-                </label>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <select
-                    value={countryCode}
-                    onChange={(e) => setCountryCode(e.target.value)}
-                    className="rounded-2xl border border-gray-300 bg-white px-3 py-4 font-semibold text-[#060d57] outline-none focus:border-[#75a62f]"
-                  >
-                    {countryCodes.map((country) => (
-                      <option
-                        key={`${country.label}-${country.code}`}
-                        value={country.code}
-                      >
-                        {country.flag} {country.code}
-                      </option>
-                    ))}
-                  </select>
-
-                  <input
-                    type="tel"
-                    placeholder="780 8226"
-                    value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)}
-                    className="col-span-2 rounded-2xl border border-gray-300 bg-white px-5 py-4 font-semibold text-[#060d57] placeholder:text-gray-500 outline-none focus:border-[#75a62f]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Email Address *
-                </label>
-
-                <input
-                  type="email"
-                  placeholder="example@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 font-semibold text-[#060d57] placeholder:text-gray-500 outline-none focus:border-[#75a62f]"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Requested Pickup Date *
-                </label>
-
-                <input
+                  required
                   type="date"
-                  value={requestedStartDate}
-                  onChange={(e) => setRequestedStartDate(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 font-semibold text-[#060d57] outline-none focus:border-[#75a62f]"
+                  className={fieldClass}
+                  value={requestedPickupDate}
+                  onChange={(e) => setRequestedPickupDate(e.target.value)}
                 />
 
-                <p className="mt-2 text-sm font-semibold text-gray-600">
-                  Select the date you would like to pick up your packed meals.
-                  Requests must be submitted at least 2 days in advance.
+                <p className="mt-2 text-sm font-semibold text-slate-500">
+                  Must be at least 2 days in advance.
                 </p>
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Container Option *
+                <label className="mb-2 block font-semibold">
+                  Container Option
                 </label>
 
-                <div className="space-y-3">
-                  <button
-                    type="button"
-                    onClick={() => setContainerOption("Need Containers")}
-                    className={`w-full rounded-2xl border-2 px-5 py-4 text-left font-black ${
-                      containerOption === "Need Containers"
-                        ? "border-[#060d57] bg-[#060d57] text-white"
-                        : "border-gray-300 bg-white text-[#060d57]"
-                    }`}
-                  >
+                <select
+                  required
+                  className={fieldClass}
+                  value={containerOption}
+                  onChange={(e) => setContainerOption(e.target.value)}
+                >
+                  <option value="Need Containers">
                     I need containers ($2 per meal)
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setContainerOption("Providing Own Containers")
-                    }
-                    className={`w-full rounded-2xl border-2 px-5 py-4 text-left font-black ${
-                      containerOption === "Providing Own Containers"
-                        ? "border-[#75a62f] bg-[#75a62f] text-white"
-                        : "border-gray-300 bg-white text-[#060d57]"
-                    }`}
-                  >
+                  </option>
+                  <option value="Providing Own Containers">
                     I will provide my own containers in advance
-                  </button>
-                </div>
+                  </option>
+                </select>
               </div>
+            </div>
 
+            <div className="mb-8 grid gap-4 md:grid-cols-3">
               <div>
-                <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Promo Code
+                <label className="mb-2 block font-semibold">
+                  Number of Days
                 </label>
 
                 <input
-                  type="text"
-                  placeholder="Enter promo code if you have one"
-                  value={promoCode}
-                  onChange={(e) => setPromoCode(e.target.value)}
-                  className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 font-semibold uppercase text-[#060d57] placeholder:text-gray-500 outline-none focus:border-[#75a62f]"
+                  required
+                  type="number"
+                  min={1}
+                  className={fieldClass}
+                  value={days}
+                  onChange={(e) => setDays(Number(e.target.value))}
                 />
-
-                {isMemberCode && (
-                  <p className="mt-2 text-sm font-black text-[#75a62f]">
-                    Member discount applied.
-                  </p>
-                )}
               </div>
 
-              <label className="flex items-start gap-3 rounded-2xl bg-[#f3f3f3] p-4">
+              <div>
+                <label className="mb-2 block font-semibold">
+                  Meals Per Day
+                </label>
+
+                <select
+                  required
+                  className={fieldClass}
+                  value={mealsPerDay}
+                  onChange={(e) => setMealsPerDay(Number(e.target.value))}
+                >
+                  <option value={1}>1 Meal</option>
+                  <option value={2}>2 Meals</option>
+                  <option value={3}>3 Meals</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-2 block font-semibold">
+                  Discount Code
+                </label>
+
+                <input
+                  placeholder="Enter code if applicable"
+                  className={fieldClass}
+                  value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="mb-8 grid gap-4 md:grid-cols-2">
+              <label className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4">
                 <input
                   type="checkbox"
                   checked={subscribe}
@@ -592,221 +839,179 @@ Packed meal requests must be submitted at least 2 days in advance.
                   className="mt-1"
                 />
 
-                <span className="text-sm font-bold text-[#060d57]">
+                <span className="text-sm font-semibold text-slate-700">
                   Yes, I’d like to receive updates, discounts and special meal
                   offers.
                 </span>
               </label>
 
-              <div>
-                <label className="mb-2 block text-sm font-black text-[#060d57]">
-                  Notes / Allergies / Meal Preferences
-                </label>
+              <textarea
+                placeholder="Notes, allergies or meal preferences"
+                className={fieldClass}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
 
-                <textarea
-                  placeholder="Add any special notes after selecting meals."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="h-36 w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 font-semibold text-[#060d57] placeholder:text-gray-500 outline-none focus:border-[#75a62f]"
+            <div className="space-y-6">
+              <MealBuilder
+                label="Meal 1"
+                mode={mealOneMode}
+                setMode={setMealOneMode}
+                fixedMeal={mealOneFixed}
+                setFixedMeal={setMealOneFixed}
+                protein={mealOneProtein}
+                setProtein={setMealOneProtein}
+                proteinOz={mealOneProteinOz}
+                setProteinOz={setMealOneProteinOz}
+                carb={mealOneCarb}
+                setCarb={setMealOneCarb}
+                carbOz={mealOneCarbOz}
+                setCarbOz={setMealOneCarbOz}
+                fat={mealOneFat}
+                setFat={setMealOneFat}
+                side={mealOneSide}
+                setSide={setMealOneSide}
+              />
+
+              {mealsPerDay >= 2 && (
+                <MealBuilder
+                  label="Meal 2"
+                  mode={mealTwoMode}
+                  setMode={setMealTwoMode}
+                  fixedMeal={mealTwoFixed}
+                  setFixedMeal={setMealTwoFixed}
+                  protein={mealTwoProtein}
+                  setProtein={setMealTwoProtein}
+                  proteinOz={mealTwoProteinOz}
+                  setProteinOz={setMealTwoProteinOz}
+                  carb={mealTwoCarb}
+                  setCarb={setMealTwoCarb}
+                  carbOz={mealTwoCarbOz}
+                  setCarbOz={setMealTwoCarbOz}
+                  fat={mealTwoFat}
+                  setFat={setMealTwoFat}
+                  side={mealTwoSide}
+                  setSide={setMealTwoSide}
                 />
-              </div>
+              )}
+
+              {mealsPerDay === 3 && (
+                <MealBuilder
+                  label="Meal 3"
+                  mode={mealThreeMode}
+                  setMode={setMealThreeMode}
+                  fixedMeal={mealThreeFixed}
+                  setFixedMeal={setMealThreeFixed}
+                  protein={mealThreeProtein}
+                  setProtein={setMealThreeProtein}
+                  proteinOz={mealThreeProteinOz}
+                  setProteinOz={setMealThreeProteinOz}
+                  carb={mealThreeCarb}
+                  setCarb={setMealThreeCarb}
+                  carbOz={mealThreeCarbOz}
+                  setCarbOz={setMealThreeCarbOz}
+                  fat={mealThreeFat}
+                  setFat={setMealThreeFat}
+                  side={mealThreeSide}
+                  setSide={setMealThreeSide}
+                />
+              )}
             </div>
-          </section>
+          </div>
 
-          <section className="rounded-3xl bg-white p-6 shadow-xl lg:col-span-1">
-            <h2 className="mb-4 text-3xl font-black text-[#060d57]">
-              Select Meals
-            </h2>
+          <div className="rounded-3xl bg-white p-6 shadow-sm">
+            <h2 className="mb-6 text-2xl font-bold">Quote Summary</h2>
 
-            <p className="mb-4 font-semibold text-gray-600">
-              Choose meals from the menu. Minimum 7 meals required.
-            </p>
-
-            <div className="mb-5 flex flex-wrap gap-2">
-              {menuCategories.map((category, index) => (
-                <button
-                  key={category.title}
-                  onClick={() => setActiveCategoryIndex(index)}
-                  className={`rounded-2xl px-4 py-3 text-sm font-black ${
-                    activeCategoryIndex === index
-                      ? "bg-[#060d57] text-white"
-                      : "bg-[#f3f3f3] text-[#060d57]"
-                  }`}
-                >
-                  {category.title}
-                </button>
-              ))}
-            </div>
-
-            <div className="rounded-3xl bg-[#f3f3f3] p-4">
-              <h3 className="text-2xl font-black text-[#060d57]">
-                {activeCategory.title}
-              </h3>
-
-              <p className="mt-2 mb-4 text-sm font-semibold leading-relaxed text-gray-600">
-                {activeCategory.description}
-              </p>
-
-              <div className="space-y-3">
-                {activeCategory.items.map((item) => (
-                  <div
-                    key={`${activeCategory.title}-${item.name}`}
-                    className="rounded-2xl bg-white p-4"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-lg font-black text-[#060d57]">
-                          {item.name}
-                        </p>
-
-                        <p className="mt-2 text-sm font-bold text-[#75a62f]">
-                          ${item.price}
-                        </p>
-                      </div>
-
-                      <button
-                        onClick={() => addMeal(activeCategory.title, item)}
-                        className="rounded-xl bg-[#060d57] px-5 py-3 font-black text-white"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="rounded-3xl bg-white p-6 shadow-xl">
-            <h2 className="mb-6 text-3xl font-black text-[#060d57]">
-              Request Summary
-            </h2>
-
-            <div className="mb-5 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl bg-[#f3f3f3] p-4">
-                <p className="text-sm font-black uppercase text-[#75a62f]">
-                  Meals
-                </p>
-
-                <p className="text-3xl font-black text-[#060d57]">
-                  {totalMeals}
-                </p>
+            <div className="space-y-4">
+              <div className="flex justify-between border-b pb-3">
+                <span>Total Meals</span>
+                <span className="font-semibold">{totalMeals}</span>
               </div>
 
-              <div className="rounded-2xl bg-[#f3f3f3] p-4">
-                <p className="text-sm font-black uppercase text-[#75a62f]">
-                  Discount
-                </p>
+              <div className="flex justify-between border-b pb-3">
+                <span>Meal 1</span>
+                <span className="font-semibold">
+                  ${mealOneTotal.toFixed(2)}
+                </span>
+              </div>
 
-                <p className="text-3xl font-black text-[#060d57]">
-                  {discountPercent}%
-                </p>
+              {mealsPerDay >= 2 && (
+                <div className="flex justify-between border-b pb-3">
+                  <span>Meal 2</span>
+                  <span className="font-semibold">
+                    ${mealTwoTotal.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              {mealsPerDay === 3 && (
+                <div className="flex justify-between border-b pb-3">
+                  <span>Meal 3</span>
+                  <span className="font-semibold">
+                    ${mealThreeTotal.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-between border-b pb-3">
+                <span>Daily Total</span>
+                <span className="font-semibold">${dailyTotal.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between border-b pb-3">
+                <span>Subtotal</span>
+                <span className="font-semibold">${subtotal.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between border-b pb-3">
+                <span>Discount</span>
+                <span className="font-semibold">
+                  {discountPercent}% - ${discountAmount.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between border-b pb-3">
+                <span>Container Fee</span>
+                <span className="font-semibold">
+                  ${containerFee.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between pt-3 text-2xl font-bold">
+                <span>Total</span>
+                <span>${grandTotal.toFixed(2)}</span>
               </div>
             </div>
 
             {totalMeals < 7 && (
-              <div className="mb-5 rounded-2xl border-2 border-red-500 bg-red-50 p-4">
-                <p className="font-black text-red-600">
-                  Add {7 - totalMeals} more meal
-                  {7 - totalMeals === 1 ? "" : "s"} to qualify.
-                </p>
-              </div>
+              <p className="mt-4 rounded-2xl bg-yellow-50 p-3 text-sm font-semibold text-yellow-800">
+                Discount applies only when ordering 7 meals or more.
+              </p>
             )}
 
-            <div className="mb-5 space-y-3">
-              {selectedMeals.length === 0 ? (
-                <p className="rounded-2xl bg-[#f3f3f3] p-4 font-semibold text-gray-600">
-                  No meals selected yet.
-                </p>
-              ) : (
-                selectedMeals.map((meal) => (
-                  <div key={meal.id} className="rounded-2xl bg-[#f3f3f3] p-4">
-                    <p className="text-sm font-black text-[#75a62f]">
-                      {meal.category}
-                    </p>
+            {totalMeals >= 7 && discountPercent === 10 && (
+              <p className="mt-4 rounded-2xl bg-green-50 p-3 text-sm font-semibold text-green-800">
+                Regular 10% discount applied.
+              </p>
+            )}
 
-                    <p className="text-lg font-black text-[#060d57]">
-                      {meal.name}
-                    </p>
-
-                    <p className="mt-1 text-sm font-bold text-gray-600">
-                      ${meal.price} each
-                    </p>
-
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => decreaseMeal(meal.id)}
-                          className="h-10 w-10 rounded-xl bg-white font-black text-[#060d57]"
-                        >
-                          −
-                        </button>
-
-                        <span className="min-w-8 text-center text-lg font-black text-[#060d57]">
-                          {meal.quantity}
-                        </span>
-
-                        <button
-                          onClick={() => increaseMeal(meal.id)}
-                          className="h-10 w-10 rounded-xl bg-[#060d57] font-black text-white"
-                        >
-                          +
-                        </button>
-                      </div>
-
-                      <button
-                        onClick={() => removeMeal(meal.id)}
-                        className="rounded-xl bg-red-50 px-4 py-2 font-black text-red-500"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div className="rounded-3xl bg-[#060d57] p-5 text-white">
-              <div className="flex justify-between font-bold text-white/80">
-                <span>Subtotal</span>
-                <span>${subtotal}</span>
-              </div>
-
-              <div className="mt-2 flex justify-between font-bold text-white/80">
-                <span>Discount</span>
-                <span>-${discountAmount.toFixed(2)}</span>
-              </div>
-
-              <div className="mt-2 flex justify-between font-bold text-white/80">
-                <span>Container Fee</span>
-                <span>${containerFee.toFixed(2)}</span>
-              </div>
-
-              <div className="mt-4 flex justify-between border-t border-white/20 pt-4 text-2xl font-black">
-                <span>Estimated Total</span>
-                <span>${estimatedTotal.toFixed(2)}</span>
-              </div>
-            </div>
+            {totalMeals >= 7 && discountPercent === 15 && (
+              <p className="mt-4 rounded-2xl bg-green-50 p-3 text-sm font-semibold text-green-800">
+                Health Addictions member 15% discount applied.
+              </p>
+            )}
 
             <button
-              onClick={submitRequest}
+              type="submit"
               disabled={loading}
-              className="mt-5 w-full rounded-2xl bg-[#75a62f] py-4 font-black text-white"
+              className="mt-8 w-full rounded-2xl bg-green-600 px-5 py-4 font-bold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-slate-400"
             >
-              {loading
-                ? "Submitting Request..."
-                : "Submit Packed Meal Request"}
+              {loading ? "Submitting..." : "Submit Weekly Meal Prep Request"}
             </button>
-
-            <a
-              href="/menu"
-              className="mt-3 block rounded-2xl border-2 border-[#060d57] py-4 text-center font-black text-[#060d57]"
-            >
-              View Regular Menu
-            </a>
-          </section>
+          </div>
         </div>
-      </div>
+      </form>
     </main>
   );
-}
+}9

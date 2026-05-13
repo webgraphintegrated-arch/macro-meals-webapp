@@ -7,7 +7,7 @@ export default function Home() {
   const [showPopup, setShowPopup] = useState(true);
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-5 py-6">
+    <main className="relative min-h-[92vh] overflow-hidden px-5 py-6">
   {/* Background Image */}
   <div className="absolute inset-0">
     <Image
@@ -122,7 +122,7 @@ export default function Home() {
                 href="/request-packed-meals"
                 className="rounded-2xl bg-[#060d57] px-6 py-4 text-center text-lg font-black text-white shadow-lg transition hover:scale-[1.01]"
               >
-                Weekly Packed Meals
+                Weekly Meal Prep Request
               </a>
             </div>
           </div>

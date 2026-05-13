@@ -515,12 +515,12 @@ export default function MealPlanPage() {
     }
 
     if (!isAtLeastTwoDaysAhead(requestedPickupDate)) {
-      alert("Meal plan requests must be submitted at least 2 days in advance.");
+      alert("Weekly Meal Prep Request must be submitted at least 2 days in advance.");
       return;
     }
 
     if (totalMeals < 7) {
-      alert("Meal plan requests must include at least 7 meals.");
+      alert("Weekly Meal Prep Requests must include at least 7 meals.");
       return;
     }
 
@@ -615,7 +615,7 @@ export default function MealPlanPage() {
 
     if (error) {
       console.error(error);
-      alert("Failed to submit meal plan request.");
+      alert("Failed to submit weekly meal prep request.");
       setLoading(false);
       return;
     }
@@ -674,7 +674,7 @@ ${notes || "None"}
     );
 
     setLoading(false);
-    alert("Meal plan request submitted successfully.");
+    alert("Weekly Meal Prep Request submitted successfully.");
   }
 
   return (
@@ -1009,11 +1009,11 @@ ${notes || "None"}
               disabled={loading}
               className="mt-8 w-full rounded-2xl bg-green-600 px-5 py-4 font-bold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-slate-400"
             >
-              {loading ? "Submitting..." : "Submit Meal Plan Request"}
+              {loading ? "Submitting..." : "Submit Weekly Meal Prep Request"}
             </button>
           </div>
         </div>
       </form>
     </main>
   );
-}
+}9
