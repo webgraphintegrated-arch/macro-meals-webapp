@@ -26,7 +26,6 @@ const statuses = [
   "Pending",
   "Preparing",
   "Ready for Pickup",
-  "Ready Message Sent",
   "Pickup Complete",
   "Cancelled",
 ];
@@ -177,7 +176,7 @@ export default function StaffOrdersPage() {
   }
 
   async function sendReadyMessage(order: Order) {
-    const cleanPhone = order.whatsapp.replace(/\D/g, "");
+  const cleanPhone = order.whatsapp.replace(/\D/g, "");
 
     const message = `Hi ${order.customer_name},
 
