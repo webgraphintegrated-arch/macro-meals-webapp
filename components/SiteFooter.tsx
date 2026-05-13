@@ -1,6 +1,6 @@
 export default function SiteFooter() {
   return (
-    <footer className="mt-8 pb-6 text-center">
+    <footer className="mt-4 pb-6 text-center">
       <p className="text-sm text-gray-500">
         Design & Developed by{" "}
         <a
