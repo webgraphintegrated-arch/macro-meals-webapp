@@ -689,7 +689,7 @@ ${notes || "None"}
 
           <p className="mt-2 text-slate-600">
             7+ meals get 10% off. Health Addictions members use code
-            HEALTHADDICT26 for 15% off.
+            provided by your coach.
           </p>
 
           <p className="mt-2 text-sm font-semibold text-slate-500">
