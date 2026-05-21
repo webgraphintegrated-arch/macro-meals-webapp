@@ -22,8 +22,13 @@ export default function CheckoutPage() {
   const [notes, setNotes] = useState("");
   const [subscribe, setSubscribe] = useState(false);
 
+  const [promoCode, setPromoCode] = useState("");
+
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("macroMealsCart") || "[]");
+    const savedCart = JSON.parse(
+      localStorage.getItem("macroMealsCart") || "[]"
+    );
+
     setCart(savedCart);
   }, []);
 
@@ -31,6 +36,15 @@ export default function CheckoutPage() {
     (total, item) => total + item.price * item.quantity,
     0
   );
+
+  const isDiscountCode =
+    promoCode.trim().toUpperCase() === "HEALTHADDICT1";
+
+  const discountPercent = isDiscountCode ? 25 : 0;
+
+  const discountAmount = subtotal * (discountPercent / 100);
+
+  const finalTotal = subtotal - discountAmount;
 
   async function sendWhatsAppOrder() {
     if (!fullName || !whatsapp || !pickupDate || !pickupTime) {
@@ -45,7 +59,6 @@ export default function CheckoutPage() {
 
     setLoading(true);
 
-    /* SAVE TO SUPABASE */
     const { error } = await supabase.from("orders").insert([
       {
         customer_name: fullName,
@@ -57,6 +70,10 @@ export default function CheckoutPage() {
         subscribe,
         items: cart,
         subtotal,
+        promo_code: promoCode,
+        discount_percent: discountPercent,
+        discount_amount: discountAmount,
+        final_total: finalTotal,
       },
     ]);
 
@@ -70,7 +87,9 @@ export default function CheckoutPage() {
     const orderItems = cart
       .map(
         (item) =>
-          `${item.quantity}x ${item.category} - ${item.name} - $${item.price * item.quantity}`
+          `${item.quantity}x ${item.category} - ${item.name} - $${
+            item.price * item.quantity
+          }`
       )
       .join("\n");
 
@@ -86,7 +105,16 @@ Pickup Time: ${pickupTime}
 Order:
 ${orderItems}
 
-Subtotal: $${subtotal}
+Subtotal: $${subtotal.toFixed(2)}
+
+Discount: ${discountPercent}% (-$${discountAmount.toFixed(2)})
+
+Final Total: $${finalTotal.toFixed(2)}
+
+Promo Code: ${promoCode || "N/A"}
+
+Notes:
+${notes || "None"}
 `;
 
     const whatsappURL = `https://wa.me/12687808226?text=${encodeURIComponent(
@@ -105,17 +133,12 @@ Subtotal: $${subtotal}
   return (
     <main className="min-h-screen bg-[#f3f3f3] px-4 py-8">
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
-
-        {/* LEFT SIDE */}
         <section className="rounded-3xl bg-white p-6 shadow-xl">
-
           <h1 className="mb-6 text-3xl font-black text-[#060d57]">
             Pickup Details
           </h1>
 
           <div className="space-y-5">
-
-            {/* FULL NAME */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 Full Name *
@@ -126,18 +149,16 @@ Subtotal: $${subtotal}
                 placeholder="John Doe"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 text-base font-semibold text-[#060d57] placeholder:text-gray-500 outline-none focus:border-[#75a62f]"
+                className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 text-base font-semibold text-[#060d57]"
               />
             </div>
 
-            {/* WHATSAPP */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 WhatsApp Number *
               </label>
 
               <div className="grid grid-cols-3 gap-3">
-
                 <select
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value)}
@@ -158,13 +179,11 @@ Subtotal: $${subtotal}
                   placeholder="780 8226"
                   value={whatsapp}
                   onChange={(e) => setWhatsapp(e.target.value)}
-                  className="col-span-2 rounded-2xl border border-gray-300 bg-white px-5 py-4 text-base font-semibold text-[#060d57] placeholder:text-gray-500"
+                  className="col-span-2 rounded-2xl border border-gray-300 bg-white px-5 py-4 text-base font-semibold text-[#060d57]"
                 />
-
               </div>
             </div>
 
-            {/* EMAIL */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 Email Address (Optional)
@@ -175,11 +194,10 @@ Subtotal: $${subtotal}
                 placeholder="example@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 text-base font-semibold text-[#060d57] placeholder:text-gray-500"
+                className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 text-base font-semibold text-[#060d57]"
               />
             </div>
 
-            {/* PICKUP DATE */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 Pickup Date *
@@ -193,7 +211,6 @@ Subtotal: $${subtotal}
               />
             </div>
 
-            {/* PICKUP TIME */}
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 Pickup Time *
@@ -207,7 +224,26 @@ Subtotal: $${subtotal}
               />
             </div>
 
-            {/* NOTES */}
+            <div>
+              <label className="mb-2 block text-sm font-black text-[#060d57]">
+                Discount Code
+              </label>
+
+              <input
+                type="text"
+                placeholder="Enter promo code"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value)}
+                className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 text-base font-semibold text-[#060d57]"
+              />
+
+              {discountPercent > 0 && (
+                <p className="mt-2 text-sm font-black text-[#75a62f]">
+                  25% discount applied successfully.
+                </p>
+              )}
+            </div>
+
             <div>
               <label className="mb-2 block text-sm font-black text-[#060d57]">
                 Notes / Allergies / Special Requests
@@ -217,11 +253,10 @@ Subtotal: $${subtotal}
                 placeholder="No onions, extra sauce, allergy notes, etc."
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="h-32 w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 text-base font-semibold text-[#060d57] placeholder:text-gray-500"
+                className="h-32 w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 text-base font-semibold text-[#060d57]"
               />
             </div>
 
-            {/* SUBSCRIBE */}
             <label className="flex items-start gap-3 rounded-2xl bg-[#f3f3f3] p-4">
               <input
                 type="checkbox"
@@ -235,11 +270,8 @@ Subtotal: $${subtotal}
               </span>
             </label>
 
-            {/* PICKUP LOCATION */}
             <div className="rounded-3xl bg-[#060d57] p-5 text-white">
-              <p className="text-lg font-black">
-                Pickup Location
-              </p>
+              <p className="text-lg font-black">Pickup Location</p>
 
               <p className="mt-1 text-base leading-relaxed">
                 National Fitness Centre Campsite
@@ -247,25 +279,20 @@ Subtotal: $${subtotal}
                 (Barrows Gym)
               </p>
             </div>
-
           </div>
         </section>
 
-        {/* RIGHT SIDE */}
         <section className="rounded-3xl bg-white p-6 shadow-xl">
-
           <h2 className="mb-6 text-3xl font-black text-[#060d57]">
             Order Summary
           </h2>
 
           <div className="space-y-5">
-
             {cart.map((item) => (
               <div
                 key={item.id}
                 className="border-b border-gray-200 pb-4"
               >
-
                 <h3 className="text-lg font-black text-[#060d57]">
                   {item.quantity}x {item.category} - {item.name}
                 </h3>
@@ -277,26 +304,32 @@ Subtotal: $${subtotal}
                 <p className="mt-1 text-2xl font-black text-[#75a62f]">
                   ${item.price * item.quantity}
                 </p>
-
               </div>
             ))}
-
           </div>
 
-          {/* SUBTOTAL */}
-          <div className="mt-8 flex items-center justify-between">
+          {discountPercent > 0 && (
+            <div className="mt-6 flex items-center justify-between rounded-2xl bg-green-50 p-4">
+              <p className="text-lg font-black text-[#060d57]">
+                Discount ({discountPercent}%)
+              </p>
 
+              <p className="text-2xl font-black text-[#75a62f]">
+                -${discountAmount.toFixed(2)}
+              </p>
+            </div>
+          )}
+
+          <div className="mt-8 flex items-center justify-between">
             <h3 className="text-2xl font-black text-[#060d57]">
-              Subtotal
+              Total
             </h3>
 
             <p className="text-3xl font-black text-[#060d57]">
-              ${subtotal}
+              ${finalTotal.toFixed(2)}
             </p>
-
           </div>
 
-          {/* SEND BUTTON */}
           <button
             onClick={sendWhatsAppOrder}
             disabled={loading}
@@ -304,7 +337,6 @@ Subtotal: $${subtotal}
           >
             {loading ? "Sending Order..." : "Send Order on WhatsApp"}
           </button>
-
         </section>
       </div>
     </main>

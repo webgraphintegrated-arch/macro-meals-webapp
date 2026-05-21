@@ -249,10 +249,10 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
           <div className="flex flex-wrap gap-3">
             <a
-              href="/admin/packed-meals"
+              href="/admin/meal-prep"
               className="relative rounded-2xl bg-red-500 px-5 py-3 font-black text-white"
             >
-              🔔 Packed Meal Requests
+               Meal Prep Requests
               {packedRequestCount > 0 && (
                 <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-700 text-xs font-black text-white">
                   {packedRequestCount}
