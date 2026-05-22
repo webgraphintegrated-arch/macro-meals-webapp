@@ -96,7 +96,7 @@ Items:
 ${cart
   .map(
     (item) =>
-      `${item.quantity}x ${item.name}`
+      `${item.quantity}x ${item.category} - ${item.name}`
   )
   .join("\n")}
 
@@ -106,7 +106,7 @@ Open Dashboard:
 https://macromeals.healthaddictions.co/admin/orders
 `;
 
-  await fetch("/api/telegram", {
+  const telegramRes = await fetch("/api/telegram", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -115,6 +115,8 @@ https://macromeals.healthaddictions.co/admin/orders
       message: telegramMessage,
     }),
   });
+  const telegramData = await telegramRes.json();
+console.log("Telegram response:", telegramData);
 } catch (telegramError) {
   console.error("Telegram notification failed", telegramError);
 }
