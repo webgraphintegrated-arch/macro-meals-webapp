@@ -27,9 +27,8 @@ type Order = {
 
 const statuses = [
   "Pending",
-  "Preparing",
+  "Order Received",
   "Ready for Pickup",
-  "Ready Message Sent",
   "Pickup Complete",
   "Cancelled",
 ];
@@ -37,7 +36,7 @@ const statuses = [
 const topStatusCards = [
   "All",
   "Pending",
-  "Preparing",
+  "Order Received",
   "Ready for Pickup",
   "Ready Message Sent",
   "Pickup Complete",
@@ -46,7 +45,7 @@ const topStatusCards = [
 const filterOptions = [
   "All",
   "Pending",
-  "Preparing",
+  "Order Received",
   "Ready for Pickup",
   "Ready Message Sent",
   "Pickup Complete",
@@ -180,25 +179,32 @@ export default function OwnerOrdersPage() {
     );
   }
 
-  async function sendReadyMessage(order: Order) {
-    const cleanPhone = order.whatsapp.replace(/\D/g, "");
+  async function sendOrderReceivedMessage(order: Order) {
+  const cleanPhone = order.whatsapp.replace(/\D/g, "");
 
-    const message = `Hi ${order.customer_name},
+  const message = `Hi ${order.customer_name},
 
-Your Macro Meals order is now ready for pickup at National Fitness Centre Campsite (Barrows Gym).
+Your Macro Meals order has been received.
+
+Our team will begin preparing your meal shortly.
+
+Please stay tuned. You’ll receive another WhatsApp message once your order is ready for pickup.
 
 Pickup Date: ${order.pickup_date}
 Pickup Time: ${order.pickup_time}
 
+Pickup Location:
+National Fitness Centre Campsite (Barrows Gym)
+
 Thank you for ordering with Macro Meals On Wheels.`;
 
-    window.open(
-      `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+  window.open(
+    `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
 
-    await updateStatus(order.id, "Ready Message Sent");
-  }
+  await updateStatus(order.id, "Order Received");
+}
 
   function logout() {
     localStorage.removeItem("macroMealsRole");

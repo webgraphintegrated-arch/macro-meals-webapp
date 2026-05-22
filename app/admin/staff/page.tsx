@@ -24,7 +24,7 @@ type Order = {
 
 const statuses = [
   "Pending",
-  "Preparing",
+  "Order Received",
   "Ready for Pickup",
   "Pickup Complete",
   "Cancelled",
@@ -33,7 +33,7 @@ const statuses = [
 const topStatusCards = [
   "All",
   "Pending",
-  "Preparing",
+  "Order Received",
   "Ready for Pickup",
   "Ready Message Sent",
   "Pickup Complete",
@@ -42,7 +42,7 @@ const topStatusCards = [
 const filterOptions = [
   "All",
   "Pending",
-  "Preparing",
+  "Order Received",
   "Ready for Pickup",
   "Ready Message Sent",
   "Pickup Complete",
@@ -175,26 +175,54 @@ export default function StaffOrdersPage() {
     );
   }
 
-  async function sendReadyMessage(order: Order) {
+  async function sendOrderReceivedMessage(order: Order) {
   const cleanPhone = order.whatsapp.replace(/\D/g, "");
 
-    const message = `Hi ${order.customer_name},
+  const message = `Hi ${order.customer_name},
 
-Your Macro Meals order is now ready for pickup at National Fitness Centre Campsite (Barrows Gym).
+Your Macro Meals order has been received.
+
+Our team will begin preparing your meal shortly.
+
+Please stay tuned. You’ll receive another WhatsApp message once your order is ready for pickup.
 
 Pickup Date: ${order.pickup_date}
 Pickup Time: ${order.pickup_time}
 
+Pickup Location:
+National Fitness Centre Campsite (Barrows Gym)
+
 Thank you for ordering with Macro Meals On Wheels.`;
 
-    window.open(
-      `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+  window.open(
+    `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
 
-    await updateStatus(order.id, "Ready Message Sent");
-  }
+  await updateStatus(order.id, "Order Received");
+}
+async function sendReadyMessage(order: Order) {
+  const cleanPhone = order.whatsapp.replace(/\D/g, "");
 
+  const message = `Hi ${order.customer_name},
+
+Your Macro Meals order is now ready for pickup.
+
+Pickup Date: ${order.pickup_date}
+Pickup Time: ${order.pickup_time}
+
+Pickup Location:
+National Fitness Centre Campsite (Barrows Gym)
+
+Thank you for ordering with Macro Meals On Wheels.`;
+
+  window.open(
+    `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+
+  await updateStatus(order.id, "Ready Message Sent");
+}
   function logout() {
     localStorage.removeItem("macroMealsRole");
     localStorage.removeItem("macroMealsAdmin");
@@ -437,16 +465,16 @@ Thank you for ordering with Macro Meals On Wheels.`;
                         ))}
                       </select>
 
-                      {order.status === "Pending" && (
-                        <button
-                          onClick={() => updateStatus(order.id, "Preparing")}
-                          className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
-                        >
-                          Start Preparing
-                        </button>
-                      )}
+                     {order.status === "Pending" && (
+                      <button
+                        onClick={() => sendOrderReceivedMessage(order)}
+                        className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
+                      >
+                        Send Order Received WhatsApp
+                      </button>
+                    )}
 
-                      {order.status === "Preparing" && (
+                      {order.status === "Order Received" && (
                         <button
                           onClick={() =>
                             updateStatus(order.id, "Ready for Pickup")
@@ -457,23 +485,14 @@ Thank you for ordering with Macro Meals On Wheels.`;
                         </button>
                       )}
 
+          
+
                       {order.status === "Ready for Pickup" && (
                         <button
                           onClick={() => sendReadyMessage(order)}
                           className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
                         >
-                          Send Ready WhatsApp
-                        </button>
-                      )}
-
-                      {order.status === "Ready Message Sent" && (
-                        <button
-                          onClick={() =>
-                            updateStatus(order.id, "Pickup Complete")
-                          }
-                          className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
-                        >
-                          Pickup Complete
+                          Send Ready for Pickup WhatsApp
                         </button>
                       )}
 
