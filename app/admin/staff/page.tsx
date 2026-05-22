@@ -201,6 +201,7 @@ Thank you for ordering with Macro Meals On Wheels.`;
 
   await updateStatus(order.id, "Order Received");
 }
+
 async function sendReadyMessage(order: Order) {
   const cleanPhone = order.whatsapp.replace(/\D/g, "");
 
@@ -466,35 +467,44 @@ Thank you for ordering with Macro Meals On Wheels.`;
                       </select>
 
                      {order.status === "Pending" && (
-                      <button
-                        onClick={() => sendOrderReceivedMessage(order)}
-                        className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
-                      >
-                        Send Order Received WhatsApp
-                      </button>
-                    )}
+  <button
+    onClick={() => sendOrderReceivedMessage(order)}
+    className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
+  >
+    Send Order Received WhatsApp
+  </button>
+)}
 
-                      {order.status === "Order Received" && (
-                        <button
-                          onClick={() =>
-                            updateStatus(order.id, "Ready for Pickup")
-                          }
-                          className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
-                        >
-                          Mark Ready for Pickup
-                        </button>
-                      )}
+{order.status === "Order Received" && (
+  <button
+    onClick={() =>
+      updateStatus(order.id, "Ready for Pickup")
+    }
+    className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
+  >
+    Mark Ready for Pickup
+  </button>
+)}
 
-          
+{order.status === "Ready for Pickup" && (
+  <button
+    onClick={() => sendReadyMessage(order)}
+    className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
+  >
+    Send Ready for Pickup WhatsApp
+  </button>
+)}
 
-                      {order.status === "Ready for Pickup" && (
-                        <button
-                          onClick={() => sendReadyMessage(order)}
-                          className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
-                        >
-                          Send Ready for Pickup WhatsApp
-                        </button>
-                      )}
+{order.status === "Ready Message Sent" && (
+  <button
+    onClick={() =>
+      updateStatus(order.id, "Pickup Complete")
+    }
+    className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
+  >
+    Pickup Complete
+  </button>
+)}
 
                       {order.status !== "Cancelled" &&
                         order.status !== "Pickup Complete" && (
