@@ -171,7 +171,7 @@ export default function OwnerOrdersPage() {
       alert("Failed to update order status.");
       return;
     }
-
+      
     setOrders((currentOrders) =>
       currentOrders.map((order) =>
         order.id === orderId ? { ...order, status: newStatus } : order

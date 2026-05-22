@@ -83,6 +83,42 @@ export default function CheckoutPage() {
       setLoading(false);
       return;
     }
+    try {
+  const telegramMessage = `
+🚨 New Macro Meals Order
+
+Customer: ${fullName}
+
+Pickup Date: ${pickupDate}
+Pickup Time: ${pickupTime}
+
+Items:
+${cart
+  .map(
+    (item) =>
+  `${item.quantity}x ${item.category} - ${item.name}`
+  )
+  .join("\n")}
+
+Total: $${finalTotal.toFixed(2)}
+
+Open Dashboard:
+https://macromeals.healthaddictions.co/admin/orders
+`;
+
+  await fetch("/api/telegram", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message: telegramMessage,
+    }),
+  });
+} catch (telegramError) {
+  console.error("Telegram notification failed", telegramError);
+}
+
 
     const orderItems = cart
       .map(
