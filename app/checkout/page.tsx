@@ -117,7 +117,6 @@ https://macromeals.healthaddictions.co/admin/orders
   });
   const telegramData = await telegramRes.json();
 console.log("Telegram response:", telegramData);
-alert(JSON.stringify(telegramData));
 } catch (telegramError) {
   console.error("Telegram notification failed", telegramError);
 }
