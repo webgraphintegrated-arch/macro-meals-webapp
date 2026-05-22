@@ -171,7 +171,7 @@ export default function OwnerOrdersPage() {
       alert("Failed to update order status.");
       return;
     }
-      
+
     setOrders((currentOrders) =>
       currentOrders.map((order) =>
         order.id === orderId ? { ...order, status: newStatus } : order
@@ -545,77 +545,77 @@ Thank you for ordering with Macro Meals On Wheels.`;
                       )}
 
                       {order.status === "Pending" && (
+                  <button
+                    onClick={() => sendOrderReceivedMessage(order)}
+                    className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
+                  >
+                    Send Order Received WhatsApp
+                  </button>
+                )}
+
+                {order.status === "Order Received" && (
+                  <button
+                    onClick={() =>
+                      updateStatus(order.id, "Ready for Pickup")
+                    }
+                    className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
+                  >
+                    Mark Ready for Pickup
+                  </button>
+                )}
+
+                {order.status === "Ready for Pickup" && (
+                  <button
+                    onClick={() => sendReadyMessage(order)}
+                    className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
+                  >
+                    Send Ready for Pickup WhatsApp
+                  </button>
+                )}
+
+                {order.status === "Ready Message Sent" && (
+                  <button
+                    onClick={() =>
+                      updateStatus(order.id, "Pickup Complete")
+                    }
+                    className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
+                  >
+                    Pickup Complete
+                  </button>
+                )}
+
+                {order.status !== "Cancelled" &&
+                  order.status !== "Pickup Complete" && (
                     <button
-                      onClick={() => sendOrderReceivedMessage(order)}
-                      className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
+                      onClick={() => updateStatus(order.id, "Cancelled")}
+                      className="rounded-2xl bg-red-500 px-5 py-4 font-black text-white"
                     >
-                      Send Order Received WhatsApp
+                      Cancel Order
                     </button>
-                  )}
+                )}
 
-                  {order.status === "Order Received" && (
-                    <button
-                      onClick={() =>
-                        updateStatus(order.id, "Ready for Pickup")
-                      }
-                      className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
-                    >
-                      Mark Ready for Pickup
-                    </button>
-                  )}
+                                      {order.status !== "Cancelled" &&
+                                        order.status !== "Pickup Complete" && (
+                                          <button
+                                            onClick={() =>
+                                              updateStatus(order.id, "Cancelled")
+                                            }
+                                            className="rounded-2xl bg-red-500 px-5 py-4 font-black text-white"
+                                          >
+                                            Cancel Order
+                                          </button>
+                                        )}
+                                    </div>
 
-                  {order.status === "Ready for Pickup" && (
-                    <button
-                      onClick={() => sendReadyMessage(order)}
-                      className="rounded-2xl bg-[#75a62f] px-5 py-4 font-black text-white"
-                    >
-                      Send Ready for Pickup WhatsApp
-                    </button>
-                  )}
+                                    <div className="mt-4 rounded-2xl bg-[#060d57] p-4 text-white">
+                                      <p className="text-sm font-semibold text-white/70">
+                                        Subtotal
+                                      </p>
 
-                  {order.status === "Ready Message Sent" && (
-                    <button
-                      onClick={() =>
-                        updateStatus(order.id, "Pickup Complete")
-                      }
-                      className="rounded-2xl bg-[#060d57] px-5 py-4 font-black text-white"
-                    >
-                      Pickup Complete
-                    </button>
-                  )}
-
-                  {order.status !== "Cancelled" &&
-                    order.status !== "Pickup Complete" && (
-                      <button
-                        onClick={() => updateStatus(order.id, "Cancelled")}
-                        className="rounded-2xl bg-red-500 px-5 py-4 font-black text-white"
-                      >
-                        Cancel Order
-                      </button>
-                  )}
-
-                                        {order.status !== "Cancelled" &&
-                                          order.status !== "Pickup Complete" && (
-                                            <button
-                                              onClick={() =>
-                                                updateStatus(order.id, "Cancelled")
-                                              }
-                                              className="rounded-2xl bg-red-500 px-5 py-4 font-black text-white"
-                                            >
-                                              Cancel Order
-                                            </button>
-                                          )}
-                                      </div>
-
-                                      <div className="mt-4 rounded-2xl bg-[#060d57] p-4 text-white">
-                                        <p className="text-sm font-semibold text-white/70">
-                                          Subtotal
-                                        </p>
-
-                                        <p className="text-3xl font-black">${order.subtotal}</p>
-                                      </div>
+                                      <p className="text-3xl font-black">${order.subtotal}</p>
                                     </div>
                                   </div>
+                                </div>
 
                 <div className="mt-6 rounded-2xl bg-[#f3f3f3] p-4">
                   <p className="mb-4 text-sm font-black uppercase tracking-wide text-[#060d57]">

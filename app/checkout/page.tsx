@@ -96,7 +96,7 @@ Items:
 ${cart
   .map(
     (item) =>
-  `${item.quantity}x ${item.category} - ${item.name}`
+      `${item.quantity}x ${item.name}`
   )
   .join("\n")}
 
@@ -118,8 +118,6 @@ https://macromeals.healthaddictions.co/admin/orders
 } catch (telegramError) {
   console.error("Telegram notification failed", telegramError);
 }
-
-
     const orderItems = cart
       .map(
         (item) =>
