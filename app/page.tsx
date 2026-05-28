@@ -119,7 +119,7 @@ export default function Home() {
               </a>
 
               <a
-                href="/request-packe"
+                href="/request-packed"
                 className="rounded-2xl bg-[#060d57] px-6 py-4 text-center text-lg font-black text-white shadow-lg transition hover:scale-[1.01]"
               >
                 Weekly Meal Prep Request
