@@ -77,18 +77,12 @@ export default function CheckoutPage() {
       },
     ]);
 
-   if (error) {
-  console.error("Supabase order error:", error);
-
-  alert(
-    `Failed to save order.\n\n${error.message}${
-      error.details ? `\n\nDetails: ${error.details}` : ""
-    }`
-  );
-
-  setLoading(false);
-  return;
-}
+    if (error) {
+      console.error(error);
+      alert("Failed to save order.");
+      setLoading(false);
+      return;
+    }
     try {
   const telegramMessage = `
  New Macro Meals Order
